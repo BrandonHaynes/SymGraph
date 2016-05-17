@@ -1,6 +1,8 @@
 #lang rosette/safe
 
-(provide make-variable make-variables)
+(provide constraints make-variable make-variables)
+
+(define constraints '(noop positional alignment grouping))
 
 (define (make-variable)
   (define-symbolic* v integer?)
