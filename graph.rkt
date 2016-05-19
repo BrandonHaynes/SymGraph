@@ -10,10 +10,6 @@
   (cartesian-product (graph-vertices graph)
                      (graph-vertices graph)))
 
-;(define (make-graph vertices edges attributes)
-;  (map () vertices)
-;  )
-
 (define s "{\"nodes\": [{\"name\": \"a\"}, {\"name\": \"b\"}, {\"name\": \"c\"}, 
 {\"name\": \"d\"}, {\"name\": \"e\"}, {\"name\": \"f\"}],
  \"links\": [
@@ -36,10 +32,11 @@
                   (let ([pair (cons (hash-ref edge 'source) (hash-ref edge 'target))])
                     (hash-set! attributes pair edge)
                   pair)))
-  (printf "  Vertices: ~a\n  Edges: ~a\n  Attributes: ~a\n" vertices edges attributes)
+  ;(printf "  Vertices: ~a\n  Edges: ~a\n  Attributes: ~a\n" vertices edges attributes)
   (graph vertices edges attributes))
 
-(json->graph s)
+(define (get-attribute g key attribute)
+   (hash-ref (hash-ref (graph-attributes g) key) attribute))
 
 (define (vertex-degree graph vertex)
   ;(define vertex (list-ref (graph-vertices graph) index))
