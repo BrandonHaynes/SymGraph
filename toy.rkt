@@ -20,7 +20,7 @@
     [`(def ,name ,expression ,statements ...)
      (register-set state name)
      (define relevant-vertices (filter (curry apply-expression graph expression) (vertex-pairs graph)))
-     (map (curry apply-statement state graph vertices) statements)]))
+     (map (curry apply-statement state graph vertices) (enumerate statements))]))
 
 (define (apply-expression graph expression pair)
   (match expression
@@ -33,11 +33,14 @@
      (vertex-degree graph (if (equal? id 'v1) (car pair) (cdr pair)))]))
 
 (define (apply-statement state graph vertices statement)
+  (map (curry apply-statement-pair state graph statement) vertices))
+
+(define (apply-statement-pair state graph statement pair)
   (match statement
-    [`(align ,axis) #:when (member axis axes)
-     (define vconstraint (register-variable state (list 'v1 'v2 'constraint 'index)))
+    [`(,index align ,axis) #:when (member axis axes)
+     (define vconstraint (register-variable state (list 'v1 'v2 index 'constraint)))
      (assert (= vconstraint (list-index 'alignment constraints)))
-     (define vaxis (register-variable state (list 'v1 'v2 'constraint 'index)))
+     (define vaxis (register-variable state (list 'v1 'v2 index 'metadata 0)))
      (assert (= vaxis (list-index axis axes)))]))
 
 (translate toy-graph program)
