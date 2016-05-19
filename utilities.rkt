@@ -1,13 +1,24 @@
 #lang racket
 
-(provide constraints operators apply-operator)
+(provide constraints unary-operators binary-operators apply-binary-operator apply-unary-operator)
 
 (define constraints '(noop positional alignment grouping))
-(define operators '(== <= >= < > and or))
+(define binary-operators '(== <= >= < > and or))
+(define unary-operators '(not))
 
-(define (apply-operator op lvalue rvalue)
+(define (apply-binary-operator op lvalue rvalue)
   (match op
-    ['== (= lvalue rvalue)]))
+    ['==  (=   lvalue rvalue)]
+    ['>=  (>=  lvalue rvalue)]
+    ['<=  (<=  lvalue rvalue)]
+    ['<   (<   lvalue rvalue)]
+    ['>   (>   lvalue rvalue)]
+    ['and (and lvalue rvalue)]
+    ['or  (or  lvalue rvalue)]))
+
+(define (apply-unary-operator op value)
+  (match op
+    ['not (not value)]))
 
 ;
 ;#lang rosette/safe

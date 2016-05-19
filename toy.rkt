@@ -17,17 +17,19 @@
   (match set
     [`(def ,name ,expression ,statements ...)
      (register-set state name)
-     (filter (curry execute-expression graph expression) (vertex-pairs graph))
+     (printf "~a\n" (filter (curry execute-expression graph expression) (vertex-pairs graph)))
      '()]
-    [`(,op ,lvalue ,rvalue) #:when (member op operators)
+    [`(,op ,lvalue ,rvalue) #:when (member op binary-operators)
      (list op (translate-set state graph lvalue) (translate-set state graph rvalue))]
     ))
 
 (define (execute-expression graph expression pair)
   (match expression
-    [`(,op ,lvalue ,rvalue) #:when (member op operators)
-     (apply-operator op (execute-expression graph lvalue pair)
-                        (execute-expression graph rvalue pair))]
+    [`(,op ,lvalue ,rvalue) #:when (member op binary-operators)
+     (apply-binary-operator op (execute-expression graph lvalue pair)
+                               (execute-expression graph rvalue pair))]
+    [`(,op ,value) #:when (member op unary-operators)
+     (apply-unary-operator op (execute-expression graph value pair))]
     [`(prop ,id degree)     #:when (member id '(v1 v2))
      (vertex-degree graph (if (equal? id 'v1) (car pair) (cdr pair)))]))
 
