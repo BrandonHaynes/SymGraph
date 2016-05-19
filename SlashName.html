@@ -1,0 +1,135 @@
+<head><meta charset="utf-8">
+
+<title>\Name</title>
+<style>
+  .graph {
+    width: 45%;
+    height: 90%;
+  }
+  svg {
+    width: 50%;
+    height: 90%;
+    border: 1px solid black;
+  }
+</style>
+</head>
+
+<body>
+  <input type="submit" id="submit" value="Submit">
+  <br><textarea class="graph">{
+  "nodes": [
+    {"name": "a"}, {"name": "b"}, {"name": "c"}, 
+    {"name": "d"}, {"name": "e"}, {"name": "f"}
+  ],
+  "links": [
+    {"source": 0, "target": 1},
+    {"source": 0, "target": 2},
+    {"source": 1, "target": 3},
+    {"source": 2, "target": 4},
+    {"source": 2, "target": 5}
+  ],
+  "constraints": [
+    {"type": "alignment", "axis": "y", "offsets":[{"node":0, "offset":0}]},
+    {"type": "alignment", "axis": "y", "offsets":[{"node":1, "offset":0}, {"node":2, "offset":0}]},
+    {"type": "alignment", "axis": "y", "offsets":[{"node":3, "offset":0}, {"node":4, "offset":0}, {"node":5, "offset":0}]},
+    {"axis": "x", "left": 1, "right": 2, "gap": 50},
+    {"axis": "x", "left": 3, "right": 4, "gap": 50},
+    {"axis": "x", "left": 3, "right": 5, "gap": 50},
+    {"axis": "x", "left": 4, "right": 5, "gap": 50},
+    {"type": "alignment", "axis": "x", "offsets":[{"node":0, "offset":0}, {"node":1, "offset":0}]},
+    {"type": "alignment", "axis": "x", "offsets":[{"node":1, "offset":0}, {"node":3, "offset":0}]},
+    {"type": "alignment", "axis": "x", "offsets":[{"node":2, "offset":0}, {"node":4, "offset":0}]},
+    {"axis": "y", "left": 0, "right": 1, "gap": 25},
+    {"axis": "y", "left": 0, "right": 2, "gap": 25},
+    {"axis": "y", "left": 0, "right": 3, "gap": 25},
+    {"axis": "y", "left": 0, "right": 4, "gap": 25},
+    {"axis": "y", "left": 0, "right": 5, "gap": 25},
+    {"axis": "y", "left": 1, "right": 3, "gap": 25},
+    {"axis": "y", "left": 1, "right": 4, "gap": 25},
+    {"axis": "y", "left": 1, "right": 5, "gap": 25},
+    {"axis": "y", "left": 2, "right": 3, "gap": 25},
+    {"axis": "y", "left": 2, "right": 4, "gap": 25},
+    {"axis": "y", "left": 2, "right": 5, "gap": 25}
+  ]
+}</textarea>
+  <svg></svg>
+
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://marvl.infotech.monash.edu/webcola/cola.v3.min.js"></script>
+<script>
+
+d3.select("#submit").on("click", redraw);
+
+//Avoid Overlaps:
+//<input type="radio" name="overlap" value="true" checked> True
+//<input type="radio" name="overlap" value="false"> False<br>
+
+// Setup Cola:
+var width = d3.select("svg").style("width").replace("px", ""),
+    height = d3.select("svg").style("height").replace("px", "");
+var svg = d3.select("svg");
+var cola = cola.d3adaptor()
+    .size([width, height]);
+
+// Temporary graph based on http://marvl.infotech.monash.edu/webcola/examples/unconstrained.html
+var tempGraph = '{"nodes": [{"name": "a"}, {"name": "b"}, {"name": "c"}, {"name": "d"}, {"name": "e"}, {"name": "f"}],"links": [{"source": 0, "target": 1},{"source": 0, "target": 2},{"source": 1, "target": 3},{"source": 2, "target": 4},{"source": 2, "target": 5}], "constraints": [{"type": "alignment", "axis": "y", "offsets":[{"node":0, "offset":0}]},{"type": "alignment", "axis": "y", "offsets":[{"node":1, "offset":0}, {"node":2, "offset":0}]},{"type": "alignment", "axis": "y", "offsets":[{"node":3, "offset":0}, {"node":4, "offset":0}, {"node":5, "offset":0}]},{"axis": "x", "left": 1, "right": 2, "gap": 50},{"axis": "x", "left": 3, "right": 4, "gap": 50},{"axis": "x", "left": 3, "right": 5, "gap": 50},{"axis": "x", "left": 4, "right": 5, "gap": 50},{"type": "alignment", "axis": "x", "offsets":[{"node":0, "offset":0}, {"node":1, "offset":0}]},{"type": "alignment", "axis": "x", "offsets":[{"node":1, "offset":0}, {"node":3, "offset":0}]},{"type": "alignment", "axis": "x", "offsets":[{"node":2, "offset":0}, {"node":4, "offset":0}]},{"axis": "y", "left": 0, "right": 1, "gap": 25},{"axis": "y", "left": 0, "right": 2, "gap": 25},{"axis": "y", "left": 0, "right": 3, "gap": 25},{"axis": "y", "left": 0, "right": 4, "gap": 25},{"axis": "y", "left": 0, "right": 5, "gap": 25},{"axis": "y", "left": 1, "right": 3, "gap": 25},{"axis": "y", "left": 1, "right": 4, "gap": 25},{"axis": "y", "left": 1, "right": 5, "gap": 25},{"axis": "y", "left": 2, "right": 3, "gap": 25},{"axis": "y", "left": 2, "right": 4, "gap": 25},{"axis": "y", "left": 2, "right": 5, "gap": 25}]}';
+
+function redraw() {
+  svg.selectAll("*").remove();  // Remove all the old elements.
+
+  // Get the specification
+  var graph;
+  try {
+    graph = JSON.parse(document.getElementsByClassName("graph")[0].value);
+  } catch (error) {
+    console.log("ERROR: Error in given specification (" + error + "). Displaying original graph.");
+    graph = JSON.parse(tempGraph);
+    document.getElementsByClassName("graph")[0].value = tempGraph;
+  }
+
+  // Get the overlap constraint
+  //var elements = document.getElementsByName("overlap");
+  //var avoid;
+  //for (var i = elements.length - 1; i >= 0; i--) {
+  //  if(elements[i].checked) avoid = elements[i].value;
+  //};
+
+  var color = d3.scale.category20();
+
+  cola.nodes(graph.nodes)
+      .links(graph.links)
+      .constraints(graph.constraints)
+      //.avoidOverlaps(true) // TODO: This is not even a little bit working...
+      .start(10,15,20);
+
+  var link = svg.selectAll(".link")
+      .data(graph.links)
+    .enter().append("line")
+      .attr("class", "link")
+      .style("stroke-width", 1)
+      .style("stroke", "#ddd");
+
+  var node = svg.selectAll(".node")
+      .data(graph.nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", 5)
+      .style("fill", function (d) { return color(d.group); });
+
+  node.append("title")
+      .text(function (d) { return d.name; });
+
+  cola.on("tick", function () {
+      link.attr("x1", function (d) { return d.source.x; })
+          .attr("y1", function (d) { return d.source.y; })
+          .attr("x2", function (d) { return d.target.x; })
+          .attr("y2", function (d) { return d.target.y; });
+
+      node.attr("cx", function (d) { return d.x; })
+          .attr("cy", function (d) { return d.y; });
+  });
+
+};
+
+</script>
+</body>
