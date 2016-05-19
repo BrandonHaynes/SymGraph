@@ -12,10 +12,8 @@
 ;  (map () vertices)
 ;  )
 
-(define (vertex-degree graph index)
-  (define vertex (list-ref (graph-vertices graph) index))
-  (printf "~a\n" vertex)
-  (printf "~a\n" (graph-edges graph))
+(define (vertex-degree graph vertex)
+  ;(define vertex (list-ref (graph-vertices graph) index))
   (foldl (lambda (edge sum) (+ sum (if (= vertex (car edge)) 1 0)))
          0
          (graph-edges graph)))
