@@ -7,6 +7,7 @@
 (define (make-graph vertices edges attributes)
   (define g (graph vertices edges attributes))
   (generate-depths g)
+  (generate-degrees g)
   g)
 
 (define (vertex-pairs graph)
@@ -50,3 +51,7 @@
        (set-attribute graph vertex 'depth depth)
        (for-each (curry generate-depths graph (+ depth 1)) (graph-children graph vertex))]
     [else null]))
+
+(define (generate-degrees graph)
+  (for-each (lambda (v) (set-attribute graph v 'children (graph-children graph v)))
+              (graph-vertices graph)))
