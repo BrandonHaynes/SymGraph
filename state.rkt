@@ -1,8 +1,8 @@
-#lang racket
+#lang rosette
 
 (require "variables.rkt")
 
-(provide empty-state register-set register-variable)
+(provide empty-state register-set register-variable get-value)
 
 (struct state (sets variables))
 
@@ -14,3 +14,6 @@
   (define variable (make-variable))
   (hash-set! (state-variables state) name variable)
   variable)
+
+(define (get-value state mod variable)
+  (hash-ref (model mod) (hash-ref (state-variables state) variable)))

@@ -43,6 +43,9 @@
      (define vaxis (register-variable state (list 'v1 'v2 index 'metadata 0)))
      (assert (= vaxis (list-index axis axes)))]))
 
-(translate toy-graph program)
+(define s (translate toy-graph program))
+s
 (asserts)
-(solve (asserts))
+(define m (solve (asserts)))
+m
+(printf "Value of '(v1 v2 0 constraint) is ~a\n" (get-value s m '(v1 v2 0 constraint)))
