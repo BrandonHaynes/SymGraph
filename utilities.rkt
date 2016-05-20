@@ -10,6 +10,7 @@
 (define unary-operators '(not))
 (define axes '(x-axis y-axis))
 
+; TODO change to eval
 (define (apply-binary-operator op lvalue rvalue)
   (match op
     ['==  (=   lvalue rvalue)]
