@@ -1,6 +1,8 @@
 #lang racket
 
-(require json "graph.rkt")
+(provide graph->json)
+
+(require json "graph.rkt" "state.rkt" "utilities.rkt")
 
 ; A simple graph (tree) with 6 nodes and 5 edges
 (define s
@@ -28,7 +30,7 @@
   ;(printf "  Vertices: ~a\n  Edges: ~a\n  Attributes: ~a\n" vertices edges attributes)
   (make-graph vertices edges attributes))
 
-(define (graph->json g model)
+(define (graph->json g state model)
   (define result (make-hash '()))
   (define attr (graph-attributes g))
   (hash-set! result 'nodes (for/list ([index (graph-vertices g)])
@@ -36,6 +38,15 @@
   (hash-set! result 'edges (for/list ([edge (graph-edges g)])
                             (hash-ref attr edge)))
   (define constraints '())
-  ;(hash-set! result 'constraints (for/list ([c model])
-  ;                                 (constraint c)))
+  (hash-set! result 'constraints (for/list ([c (hash-keys (state-variables state))])
+                                   (constraint state model c)))
   (write-json result))
+
+(define (constraint state model c)
+  (define val (list-ref constraints (get-value state model c)))
+  (printf "Constraint: ~a, ~a\n" c val))
+  ;(match val
+  ;  ['noop skip]
+  ;  ['positional skip]
+  ;  ['alignment #hash((axis . "x") (offsets . ) (type . "alignment"))]
+  ;  ['grouping skip]))

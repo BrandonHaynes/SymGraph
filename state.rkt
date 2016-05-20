@@ -2,7 +2,7 @@
 
 (require "variables.rkt")
 
-(provide empty-state register-set register-variable get-value)
+(provide empty-state register-set register-variable get-value state-variables)
 
 (struct state (sets variables))
 
