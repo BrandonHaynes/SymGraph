@@ -7,8 +7,10 @@
 (define attributes (make-hash))
 (define toy-graph (make-graph vertices edges attributes))
 
-(define program '((def all (== (prop v1 degree) (prop v1 degree))
-                   (align x-axis))))
+(define program '((def layer (== (prop v1 depth) (prop v1 depth))
+                   (align x-axis))
+                  (def graph (== (prop v1 depth) (prop v1 depth))
+                   (align y-axis))))
 
 (define (translate graph program)
   (define state (empty-state))
@@ -22,19 +24,26 @@
      (define relevant-vertices (filter (curry apply-expression graph expression) (vertex-pairs graph)))
      (map (curry apply-statement state graph vertices) (enumerate statements))]))
 
+(define (map-id id pair)
+  (if (equal? id 'v1)
+      (car pair)
+      (cdr pair)))
+
 (define (apply-expression graph expression pair)
   (match expression
     [`(,op ,lvalue ,rvalue) #:when (member op binary-operators)
      (apply-binary-operator op (apply-expression graph lvalue pair)
                                (apply-expression graph rvalue pair))]
-    [`(,op ,value) #:when (member op unary-operators)
+    [`(,op ,value)          #:when (member op unary-operators)
      (apply-unary-operator op (apply-expression graph value pair))]
-    [`(prop ,id degree)     #:when (member id '(v1 v2))
-     (vertex-degree graph (if (equal? id 'v1) (car pair) (cdr pair)))]))
+    [`(prop ,id ,attribute) #:when (and (member id '(v1 v2))
+                                        (member attribute (get-attribute-names graph (map-id id pair))))
+     (get-attribute graph (map-id id pair) attribute)]))
 
 (define (apply-statement state graph vertices statement)
   (map (curry apply-statement-pair state graph statement)
-       (cartesian-product vertices vertices)))
+       (filter (lambda (pair) (not (equal? (car pair) (cadr pair))))
+               (cartesian-product vertices vertices))))
 
 (define (apply-statement-pair state graph statement pair)
   (match statement
@@ -49,4 +58,4 @@ s
 (asserts)
 (define m (solve (asserts)))
 m
-(printf "Value of '((3 3) 0 constraint) is ~a\n" (get-value s m '((3 3) 0 constraint)))
+(printf "Value of '((3 3) 0 constraint) is ~a\n" (get-value s m '((3 2) 0 constraint)))

@@ -1,6 +1,6 @@
 #lang racket
 
-(provide make-graph graph-vertices graph-edges graph-attributes vertex-pairs vertex-degree)
+(provide make-graph graph-vertices graph-edges graph-attributes vertex-pairs vertex-degree get-attributes get-attribute get-attribute-names)
 
 (struct graph (vertices edges attributes))
 
@@ -17,10 +17,16 @@
 (define (has-attribute? graph key attribute)
    (and
     (hash-has-key? (graph-attributes graph) key)
-    (hash-has-key? (hash-ref (graph-attributes graph) key) attribute)))
+    (hash-has-key? (get-attributes graph key) attribute)))
+
+(define (get-attributes graph key)
+   (hash-ref (graph-attributes graph) key))
 
 (define (get-attribute graph key attribute)
-   (hash-ref (hash-ref (graph-attributes graph) key) attribute))
+   (hash-ref (get-attributes graph key) attribute))
+
+(define (get-attribute-names graph key)
+   (hash-keys (hash-ref (graph-attributes graph) key)))
 
 (define (set-attribute graph key attribute value)
    (hash-set! (hash-ref (graph-attributes graph) key
@@ -53,5 +59,5 @@
     [else null]))
 
 (define (generate-degrees graph)
-  (for-each (lambda (v) (set-attribute graph v 'children (graph-children graph v)))
+  (for-each (lambda (v) (set-attribute graph v 'degree (graph-children graph v)))
               (graph-vertices graph)))
