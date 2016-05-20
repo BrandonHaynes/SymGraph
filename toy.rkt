@@ -33,14 +33,15 @@
      (vertex-degree graph (if (equal? id 'v1) (car pair) (cdr pair)))]))
 
 (define (apply-statement state graph vertices statement)
-  (map (curry apply-statement-pair state graph statement) vertices))
+  (map (curry apply-statement-pair state graph statement)
+       (cartesian-product vertices vertices)))
 
 (define (apply-statement-pair state graph statement pair)
   (match statement
     [`(,index align ,axis) #:when (member axis axes)
-     (define vconstraint (register-variable state (list 'v1 'v2 index 'constraint)))
+     (define vconstraint (register-variable state `(,pair ,index constraint)))
      (assert (= vconstraint (list-index 'alignment constraints)))
-     (define vaxis (register-variable state (list 'v1 'v2 index 'metadata 0)))
+     (define vaxis (register-variable state `(,pair ,index 'metadata 0)))
      (assert (= vaxis (list-index axis axes)))]))
 
 (define s (translate toy-graph program))
@@ -48,4 +49,4 @@ s
 (asserts)
 (define m (solve (asserts)))
 m
-(printf "Value of '(v1 v2 0 constraint) is ~a\n" (get-value s m '(v1 v2 0 constraint)))
+(printf "Value of '((3 3) 0 constraint) is ~a\n" (get-value s m '((3 3) 0 constraint)))
