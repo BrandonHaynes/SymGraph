@@ -9,7 +9,7 @@
 
 (define program '((def layer (== (prop v1 depth) (prop v1 depth))
                    (align x-axis))
-                  (def graph (== (prop v1 depth) (prop v1 depth))
+                  (def graph (layer)
                    (align y-axis))))
 
 (define (translate graph program)
@@ -19,6 +19,8 @@
 
 (define (translate-set state graph set)
   (match set
+    [`(def ,name (,ids ...) ,statements ...) #:when (andmap symbol? ids)
+                          (null)] ; partition by sets, do all that nonsense
     [`(def ,name ,expression ,statements ...)
      (register-set state name)
      (define relevant-vertices (filter (curry apply-expression graph expression) (vertex-pairs graph)))
@@ -58,4 +60,4 @@ s
 (asserts)
 (define m (solve (asserts)))
 m
-(printf "Value of '((3 3) 0 constraint) is ~a\n" (get-value s m '((3 2) 0 constraint)))
+(printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s m '((3 2) 0 constraint)))
