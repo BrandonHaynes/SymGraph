@@ -26,7 +26,7 @@
                     (hash-set! attributes pair edge)
                   pair)))
   ;(printf "  Vertices: ~a\n  Edges: ~a\n  Attributes: ~a\n" vertices edges attributes)
-  (graph vertices edges attributes))
+  (make-graph vertices edges attributes))
 
 (define (graph->json g model)
   (define result (make-hash '()))

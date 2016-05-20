@@ -4,8 +4,8 @@
 
 (define vertices (list '1 '2 '3))
 (define edges '())
-(define attributes #hash())
-(define toy-graph (graph vertices edges attributes))
+(define attributes (make-hash))
+(define toy-graph (make-graph vertices edges attributes))
 
 (define program '((def all (== (prop v1 degree) (prop v1 degree))
                    (align x-axis))))
