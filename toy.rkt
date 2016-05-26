@@ -7,10 +7,18 @@
 (define attributes (make-hash))
 (define toy-graph (make-graph vertices edges attributes))
 
-(define program '((def layer (== (prop v1 depth) (prop v1 depth))
+(define program1 '((def layer (== (prop v1 depth) (prop v2 depth))
                    (align x-axis))
                   (def graph (layer)
                    (position y-axis depth))))
+(define program2 '((def layer (== (prop v1 depth) (prop v2 depth))
+                     (align x-axis)
+                     (position y-axis depth))
+                   (def child (and (in v1 (prop v2 children))
+                                   (== v1 (min (prop v2 children))))
+                     (align y-axis))
+                   (def graph (layer)
+                     (position y-axis depth))))
 
 (define (translate graph program)
   (define state (empty-state))
@@ -25,34 +33,39 @@
         (equivalence-classes graph (get-predicate state reference-name)))] ; partition by sets
     [`(def ,name ,predicate ,statements ...)
      (register-set state name predicate)
-     (define relevant-vertices (filter (curry apply-predicate graph predicate) (vertex-pairs graph)))
+     (define relevant-vertices (filter (curry apply-expression graph predicate) (vertex-pairs graph)))
      (map (curry apply-statement state graph vertices) (enumerate statements))]))
 
 (define (equivalence-classes graph predicate)
   (foldl (lambda (v l) (equivalence-class graph predicate v l)) '() (graph-vertices graph)))
 
 (define (equivalence-class graph predicate vertex classes)
-  (match (filter (lambda class (apply-predicate graph predicate (list vertex (car class)))) classes)
+  (match (filter (lambda class (apply-expression graph predicate (cons vertex (car class)))) classes)
     [`() (append classes (list (list vertex)))]
     [`(,class _ ...) #:when (not (member vertex class))
         (replace class (cons vertex class) classes)]
     [_ classes]))
 
-(define (map-id id pair)
-  (if (equal? id 'v1)
-      (car pair)
-      (cdr pair)))
+;(define (map-id id pair)
+;  (if (equal? id 'v1)
+;      (car pair)
+;      (cadr pair))) ;cdr
 
-(define (apply-predicate graph expression pair)
+(define (apply-expression graph expression pair)
+  (printf "exp: ~a ~a\n" expression (cadr pair))
   (match expression
     [`(,op ,lvalue ,rvalue) #:when (member op binary-operators)
-     (apply-binary-operator op (apply-predicate graph lvalue pair)
-                               (apply-predicate graph rvalue pair))]
+     (apply-binary-operator op (apply-expression graph lvalue pair)
+                               (apply-expression graph rvalue pair))]
     [`(,op ,value)          #:when (member op unary-operators)
-     (apply-unary-operator op (apply-predicate graph value pair))]
+     (apply-unary-operator op (apply-expression graph value pair))]
+    ;[`(in ,v ,set)
+    ; (apply-set-membership (map-id id pair) (apply-expression graph rvalue pair))]
     [`(prop ,id ,attribute) #:when (and (member id '(v1 v2))
-                                        (member attribute (get-attribute-names graph (map-id id pair))))
-     (get-attribute graph (map-id id pair) attribute)]))
+                                        (member attribute (get-attribute-names graph (apply-expression graph id pair))))
+     (get-attribute graph (apply-expression graph id pair) attribute)]
+    ['v1 (car pair)]
+    ['v2 (cadr pair)]))
 
 (define (apply-statement state graph vertices statement)
   (map (curry apply-statement-pair state graph statement)
@@ -72,11 +85,10 @@
      (define vaxis (register-variable state `(,pair ,index 'metadata 0)))
      (assert (= vaxis (list-index axis axes)))
      (define vorder (register-variable state `(,pair ,index 'metadata 1)))
-     (assert (if (> (get-attribute graph (car pair) attribute)
-                    (get-attribute graph (cadr pair) attribute)) 
-              1 -1))]))
+     (assert (= vorder (- (get-attribute graph (car pair) attribute)
+                          (get-attribute graph (cadr pair) attribute))))]))
 
-(define s (translate toy-graph program))
+(define s (translate toy-graph program2))
 s
 (asserts)
 (define m (solve (asserts)))
