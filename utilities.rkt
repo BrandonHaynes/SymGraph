@@ -7,8 +7,8 @@
          replace)
 
 (define constraints '(noop positional alignment grouping))
-(define binary-operators '(== <= >= < > and or))
-(define unary-operators '(not))
+(define binary-operators '(== <= >= < > and or in))
+(define unary-operators '(not min))
 (define axes '(x-axis y-axis))
 
 ; TODO change to eval
@@ -20,11 +20,19 @@
     ['<   (<   lvalue rvalue)]
     ['>   (>   lvalue rvalue)]
     ['and (and lvalue rvalue)]
-    ['or  (or  lvalue rvalue)]))
+    ['or  (or  lvalue rvalue)]
+    ['in  (member lvalue rvalue)]))
 
 (define (apply-unary-operator op value)
   (match op
-    ['not (not value)]))
+    ['not
+     (not value)]
+    ['min
+     (if (equal? value '()) +nan.0 (argmin identity value))]))
+
+;(define (apply-set-membership v set)
+;  (match op
+;    ['not (not value)]))
 
 (define (list-index element list [index 0])
   (cond
