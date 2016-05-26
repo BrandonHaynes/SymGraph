@@ -3,7 +3,8 @@
 (provide constraints unary-operators binary-operators axes
          apply-binary-operator
          apply-unary-operator
-         list-index enumerate)
+         list-index enumerate
+         replace)
 
 (define constraints '(noop positional alignment grouping))
 (define binary-operators '(== <= >= < > and or))
@@ -35,3 +36,10 @@
   (if (empty? list)
       '()
       (cons (cons index (car list)) (enumerate (cdr list) (+ index 1)))))
+
+(define (replace value replacement list)
+  (cond ((null? list)
+          '())
+        ((equal? (car list) value)
+          (replace value replacement (cons replacement (cdr list))))
+        (else (cons (car list) (replace value replacement (cdr list))))))

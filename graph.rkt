@@ -26,7 +26,8 @@
    (hash-ref (get-attributes graph key) attribute))
 
 (define (get-attribute-names graph key)
-   (hash-keys (hash-ref (graph-attributes graph) key)))
+   ;(hash-keys (hash-ref (graph-attributes graph) key)))
+   (hash-keys (get-attributes graph key)))
 
 (define (set-attribute graph key attribute value)
    (hash-set! (hash-ref (graph-attributes graph) key
