@@ -8,6 +8,7 @@
   (define g (graph vertices edges attributes))
   (generate-depths g)
   (generate-degrees g)
+  (generate-children g)
   g)
 
 (define (vertex-pairs graph)
@@ -47,7 +48,10 @@
   (car (graph-vertices graph)))
 
 (define (graph-children graph vertex)
-  (filter (lambda pair (= (car pair) vertex)) (graph-edges graph)))
+  (filter (lambda pair (equal? (car pair) vertex)) (graph-edges graph)))
+
+(define (graph-parents graph vertex)
+  (filter (lambda pair (equal? (cdr pair) vertex)) (graph-edges graph)))
 
 (define (generate-depths graph [depth 0] [vertex null])
   (cond
@@ -60,5 +64,13 @@
     [else null]))
 
 (define (generate-degrees graph)
-  (for-each (lambda (v) (set-attribute graph v 'degree (graph-children graph v)))
+  (for-each (lambda (v) (set-attribute graph v 'degree (length (graph-children graph v))))
+              (graph-vertices graph)))
+
+(define (generate-parents graph)
+  (for-each (lambda (v) (set-attribute graph v 'parents (graph-parents graph v)))
+              (graph-vertices graph)))
+
+(define (generate-children graph)
+  (for-each (lambda (v) (set-attribute graph v 'children (graph-children graph v)))
               (graph-vertices graph)))
