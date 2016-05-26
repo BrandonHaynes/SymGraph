@@ -1,11 +1,11 @@
 #lang racket
 
-(provide graph->json)
+(provide json->graph graph->json example-graph) ; TODO: example-graph is an example, remove.
 
 (require json "graph.rkt" "state.rkt" "utilities.rkt")
 
 ; A simple graph (tree) with 6 nodes and 5 edges
-(define s
+(define example-graph
   "{\"nodes\": [{\"name\": \"a\"}, {\"name\": \"b\"}, {\"name\": \"c\"}, 
                 {\"name\": \"d\"}, {\"name\": \"e\"}, {\"name\": \"f\"}],
     \"links\": [
@@ -39,10 +39,12 @@
                             (hash-ref attr edge)))
   (define constraints '())
   (hash-set! result 'constraints (for/list ([c (hash-keys (state-variables state))])
+                                   (printf "State variables ~a\n" (state-variables state))
                                    (constraint state model c)))
   (write-json result))
 
 (define (constraint state model c)
+  (printf "BEFORE: ~a, ~a, ~a\n" state model c)
   (define val (list-ref constraints (get-value state model c)))
   (printf "Constraint: ~a, ~a\n" c val))
   ;(match val
@@ -50,6 +52,3 @@
   ;  ['positional skip]
   ;  ['alignment #hash((axis . "x") (offsets . ) (type . "alignment"))]
   ;  ['grouping skip]))
-
-; Testing for the JSON
-(json->graph s)

@@ -1,6 +1,6 @@
 #lang rosette
 
-(require "state.rkt" "graph.rkt" "utilities.rkt" "variables.rkt")
+(require "state.rkt" "graph.rkt" "utilities.rkt" "variables.rkt" "json.rkt")
 
 (define vertices (list '1 '2 '3))
 (define edges '())
@@ -82,3 +82,7 @@ s
 (define m (solve (asserts)))
 m
 (printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s m '((3 2) 0 constraint)))
+
+; Testing for the JSON
+(define test-graph (json->graph example-graph))
+(graph->json toy-graph s m)
