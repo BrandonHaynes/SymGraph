@@ -22,10 +22,10 @@
   (let* ([nodes (hash-ref g 'nodes)])  
     (for ([vertex nodes]
           [index (length nodes)])
-      (hash-set! attributes index vertex)))
+      (hash-set! attributes index (hash-copy vertex))))
   (define edges (for/list ([edge (hash-ref g 'links)])
                   (let ([pair (cons (hash-ref edge 'source) (hash-ref edge 'target))])
-                    (hash-set! attributes pair edge)
+                    (hash-set! attributes pair (hash-copy edge))
                   pair)))
   ;(printf "  Vertices: ~a\n  Edges: ~a\n  Attributes: ~a\n" vertices edges attributes)
   (make-graph vertices edges attributes))
@@ -50,3 +50,6 @@
   ;  ['positional skip]
   ;  ['alignment #hash((axis . "x") (offsets . ) (type . "alignment"))]
   ;  ['grouping skip]))
+
+; Testing for the JSON
+(json->graph s)
