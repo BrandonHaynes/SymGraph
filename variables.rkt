@@ -1,6 +1,6 @@
-#lang rosette
+#lang rosette/safe
 
-(provide make-variable make-variables)
+(provide make-variable make-variables fassert)
 
 (define (make-variable)
   (define-symbolic* v integer?)
@@ -8,3 +8,6 @@
 
 (define (make-variables n)  
   (append (list (make-variable)) (if (> n 1) (make-variables (- n 1)) '())))
+
+(define (fassert f)
+  (assert (f)))
