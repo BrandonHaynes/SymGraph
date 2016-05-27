@@ -8,14 +8,14 @@
          compare)
 
 (define constraints '(noop positional alignment grouping))
-(define binary-operators '(== <= >= < > and or in))
+(define binary-operators '(= <= >= < > and or in))
 (define unary-operators '(not min))
 (define axes '(x-axis y-axis))
 
 ; TODO change to eval
 (define (apply-binary-operator op lvalue rvalue)
   (match op
-    ['==  (=   lvalue rvalue)]
+    ['=  (=   lvalue rvalue)]
     ['>=  (>=  lvalue rvalue)]
     ['<=  (<=  lvalue rvalue)]
     ['<   (<   lvalue rvalue)]
@@ -30,10 +30,6 @@
      (not value)]
     ['min
      (if (equal? value '()) +nan.0 (argmin identity value))]))
-
-;(define (apply-set-membership v set)
-;  (match op
-;    ['not (not value)]))
 
 (define (list-index element list [index 0])
   (cond

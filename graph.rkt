@@ -4,7 +4,7 @@
 
 (struct graph (vertices edges attributes))
 
-(define (make-graph vertices edges attributes)
+(define (make-graph vertices edges [attributes (make-hash)])
   (define g (graph vertices edges attributes))
   (generate-depths g)
   (generate-degrees g)
