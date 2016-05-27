@@ -1,4 +1,4 @@
-#lang rosette
+#lang racket
 
 (require "variables.rkt")
 
@@ -20,5 +20,5 @@
 (define (get-predicate state set-name)
   (set-metadata-predicate (hash-ref (state-sets state) set-name)))
 
-(define (get-value state mod variable)
-  (hash-ref (model mod) (hash-ref (state-variables state) variable)))
+(define (get-value state variables variable)
+  (hash-ref variables (hash-ref (state-variables state) variable)))

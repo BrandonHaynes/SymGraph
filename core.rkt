@@ -1,6 +1,6 @@
-#lang rosette
+#lang racket
 
-(require "state.rkt" "graph.rkt" "utilities.rkt" "variables.rkt" "json.rkt")
+(require "state.rkt" "graph.rkt" "utilities.rkt" "variables.rkt" "constraints.rkt" "json.rkt")
 
 (provide translate)
 
@@ -52,22 +52,8 @@
 (define (apply-statement-pair state graph statement pair)
   (match statement
     [`(,index align ,axis) #:when (member axis axes)
-     (define vconstraint (register-variable state `(,pair ,index constraint)))
-     (fassert (thunk (= vconstraint (list-index 'alignment constraints))))
-     (define vaxis (register-variable state `(,pair ,index 'metadata 0)))
-     (fassert (thunk (= vaxis (list-index axis axes))))]
+     (align-constraint state axis index pair)]
     [`(,index position ,axis ,attribute) #:when (member axis axes)
-     (define vconstraint (register-variable state `(,pair ,index constraint)))
-     (fassert (thunk (= vconstraint (list-index 'positional constraints))))
-     (define vaxis (register-variable state `(,pair ,index 'metadata 0)))
-     (fassert (thunk (= vaxis (list-index axis axes))))
-     (define vorder (register-variable state `(,pair ,index 'metadata 1)))
-     (fassert (thunk (= vorder (- (get-attribute graph (car pair) attribute)
-                                  (get-attribute graph (cadr pair) attribute)))))]
+     (position-constraint state graph axis attribute index pair)]
     [`(,index position ,axis ,attribute ,order) #:when (member axis axes)
-     (define vconstraint (register-variable state `(,pair ,index constraint)))
-     (fassert (thunk (= vconstraint (list-index 'positional constraints))))
-     (define vaxis (register-variable state `(,pair ,index 'metadata 0)))
-     (fassert (thunk (= vaxis (list-index axis axes))))
-     (define vorder (register-variable state `(,pair ,index 'metadata 1)))
-     (fassert (thunk (= vorder (compare (car pair) (cadr pair) order))))]))
+     (ordered-position-constraint state axis order index pair)]))
