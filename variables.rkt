@@ -1,6 +1,6 @@
 #lang rosette/safe
 
-(provide make-variable make-variables fassert get-assignments)
+(provide make-variable make-variables get-assignments)
 
 (define (make-variable)
   (define-symbolic* v integer?)
@@ -11,6 +11,3 @@
 
 (define (get-assignments solution)
   (model solution))
-
-(define (fassert f)
-  (assert (f)))

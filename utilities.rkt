@@ -1,4 +1,4 @@
-#lang racket
+#lang rosette/safe
 
 (provide constraints unary-operators binary-operators axes
          apply-binary-operator
@@ -14,22 +14,20 @@
 
 ; TODO change to eval
 (define (apply-binary-operator op lvalue rvalue)
-  (match op
-    ['=  (=   lvalue rvalue)]
-    ['>=  (>=  lvalue rvalue)]
-    ['<=  (<=  lvalue rvalue)]
-    ['<   (<   lvalue rvalue)]
-    ['>   (>   lvalue rvalue)]
-    ['and (and lvalue rvalue)]
-    ['or  (or  lvalue rvalue)]
-    ['in  (member lvalue rvalue)]))
+  (cond
+    [(equal? op '=) (= lvalue rvalue)]
+    [(equal? op '>=) (>= lvalue rvalue)]
+    [(equal? op '<=) (<= lvalue rvalue)]
+    [(equal? op '<) (< lvalue rvalue)]
+    [(equal? op '>) (> lvalue rvalue)]
+    [(equal? op 'and) (and lvalue rvalue)]
+    [(equal? op 'or) (or lvalue rvalue)]
+    [(equal? op 'in) (member lvalue rvalue)]))
 
 (define (apply-unary-operator op value)
-  (match op
-    ['not
-     (not value)]
-    ['min
-     (if (equal? value '()) +nan.0 (argmin identity value))]))
+  (cond
+    [(equal? op 'not) (not value)]
+    [(equal? op 'min) (if (equal? value '()) +nan.0 (argmin identity value))]))
 
 (define (list-index element list [index 0])
   (cond
@@ -59,13 +57,15 @@
     [else 1]))
 
 (define (order-group value order)
-  (match order
-    ['() null]
-    [`(,group _ ...) #:when ((get-comparator value) value group) group]
-    [_ (order-group value (cdr order))]))
+  (printf "~a ~a\n" value order)
+  (cond
+    [(empty? order) null]
+    [((get-comparator value) value (car (flatten order))) (car order)]
+    [else (order-group value (cdr order))]))
 
 (define (get-comparator value)
   (cond
     [(number? value) <]
-    [(string? value) string<?]
-    [(symbol? value) symbol<?]))
+    ;[(string? value) string<?]
+    ;[(symbol? value) symbol<?]
+    ))

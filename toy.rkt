@@ -3,7 +3,7 @@
 (require "core.rkt" "state.rkt" "graph.rkt" "json.rkt" "variables.rkt")
 
 (define vertices (list '1 '2 '3))
-(define edges '())
+(define edges '((1 . 2))
 (define toy-graph (make-graph vertices edges))
 
 (define program1 '((def layer (= (prop v1 depth) (prop v2 depth))
@@ -34,7 +34,8 @@ m
 (define test-graph (json->graph example-graph))
 (printf "Nodes: ~a\n" (graph-vertices test-graph))
 (printf "Edges: ~a\n" (graph-edges test-graph))
-(define test-state (translate test-graph program1))
+(define test-state (translate test-graph program2))
 (asserts)
 (define test-model (solve (asserts)))
+(printf "~a\n" (get-assignments test-model))
 (graph->json test-graph test-state (get-assignments test-model))
