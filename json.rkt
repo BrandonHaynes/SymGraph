@@ -38,17 +38,26 @@
   (hash-set! result 'edges (for/list ([edge (graph-edges g)])
                             (hash-ref attr edge)))
   (define constraints '())
-  (hash-set! result 'constraints (for/list ([c (hash-keys (state-variables state))])
-                                   (printf "State variables ~a\n" (state-variables state))
-                                   (constraint state model c)))
+  (hash-set! result 'constraints (filter-not void? (for/list ([c (hash-keys (state-variables state))])
+                                   ;(printf "State variables ~a\n" (state-variables state))
+                                   (match c
+                                     [(list _ _ 'constraint) (constraint state model c)]
+                                     [_ (void)]))))
   (write-json result))
 
 (define (constraint state model c)
-  (printf "BEFORE: ~a, ~a, ~a\n" state model c)
+  (define nodes (list-ref c 0))
+  (define constraint-index (list-ref c 1))
   (define val (list-ref constraints (get-value state model c)))
-  (printf "Constraint: ~a, ~a\n" c val))
-  ;(match val
-  ;  ['noop skip]
-  ;  ['positional skip]
-  ;  ['alignment #hash((axis . "x") (offsets . ) (type . "alignment"))]
-  ;  ['grouping skip]))
+  (printf "Constraint: ~a, ~a\n" c val)
+  (match val
+    ['noop (void)]
+    ['positional (void)]
+    ['alignment
+     ;(make-hasheq '(('axis . "x")
+     ;(hash-set! result 'axis "x")
+     ;(hash-set! result 'type "alignment")
+     ;(printf "RESULT: ~a\n" result)
+     ;result]
+     (void)]
+    ['grouping (void)]))
