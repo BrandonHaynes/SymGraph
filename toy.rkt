@@ -3,8 +3,10 @@
 (require "core.rkt" "state.rkt" "graph.rkt" "json.rkt" "variables.rkt")
 
 (define vertices (list '1 '2 '3))
-(define edges '((1 . 2))
+(define edges '((1 . 2)))
 (define toy-graph (make-graph vertices edges))
+
+(graph-attributes toy-graph)
 
 (define program1 '((def layer (= (prop v1 depth) (prop v2 depth))
                    (align x-axis))
