@@ -4,7 +4,8 @@
          apply-binary-operator
          apply-unary-operator
          list-index enumerate
-         replace)
+         replace
+         compare)
 
 (define constraints '(noop positional alignment grouping))
 (define binary-operators '(== <= >= < > and or in))
@@ -51,3 +52,24 @@
         ((equal? (car list) value)
           (replace value replacement (cons replacement (cdr list))))
         (else (cons (car list) (replace value replacement (cdr list))))))
+
+(define (compare left right order)
+  (define left-group (order-group left order))
+  (define right-group (order-group right order))
+  (cond
+    [(equal? left-group right-group) 0]
+    [null? left-group -1]
+    [((get-comparator left) left-group right-group) -1]
+    [else 1]))
+
+(define (order-group value order)
+  (match order
+    ['() null]
+    [`(,group _ ...) #:when ((get-comparator value) value group) group]
+    [_ (order-group value (cdr order))]))
+
+(define (get-comparator value)
+  (cond
+    [(number? value) <]
+    [(string? value) string<?]
+    [(symbol? value) symbol<?]))

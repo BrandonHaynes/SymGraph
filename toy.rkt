@@ -19,6 +19,9 @@
                      (align y-axis))
                    (def graph (layer)
                      (position y-axis depth))))
+(define program3 '((def cluster (== (prop v1 depth) (prop v2 depth)))
+                   (def graph (cluster)
+                     (position y-axis depth (-1 (1 2) 3)))))
 
 (define (translate graph program)
   (define state (empty-state))
@@ -46,21 +49,13 @@
         (replace class (cons vertex class) classes)]
     [_ classes]))
 
-;(define (map-id id pair)
-;  (if (equal? id 'v1)
-;      (car pair)
-;      (cadr pair))) ;cdr
-
 (define (apply-expression graph expression pair)
-  (printf "exp: ~a ~a\n" expression (cadr pair))
   (match expression
     [`(,op ,lvalue ,rvalue) #:when (member op binary-operators)
      (apply-binary-operator op (apply-expression graph lvalue pair)
                                (apply-expression graph rvalue pair))]
     [`(,op ,value)          #:when (member op unary-operators)
      (apply-unary-operator op (apply-expression graph value pair))]
-    ;[`(in ,v ,set)
-    ; (apply-set-membership (map-id id pair) (apply-expression graph rvalue pair))]
     [`(prop ,id ,attribute) #:when (and (member id '(v1 v2))
                                         (member attribute (get-attribute-names graph (apply-expression graph id pair))))
      (get-attribute graph (apply-expression graph id pair) attribute)]
@@ -76,23 +71,32 @@
   (match statement
     [`(,index align ,axis) #:when (member axis axes)
      (define vconstraint (register-variable state `(,pair ,index constraint)))
-     (assert (= vconstraint (list-index 'alignment constraints)))
+     (fassert (thunk (= vconstraint (list-index 'alignment constraints))))
      (define vaxis (register-variable state `(,pair ,index 'metadata 0)))
-     (assert (= vaxis (list-index axis axes)))]
+     (fassert (thunk (= vaxis (list-index axis axes))))]
     [`(,index position ,axis ,attribute) #:when (member axis axes)
      (define vconstraint (register-variable state `(,pair ,index constraint)))
-     (assert (= vconstraint (list-index 'positional constraints)))
+     (fassert (thunk (= vconstraint (list-index 'positional constraints))))
      (define vaxis (register-variable state `(,pair ,index 'metadata 0)))
-     (assert (= vaxis (list-index axis axes)))
+     (fassert (thunk (= vaxis (list-index axis axes))))
      (define vorder (register-variable state `(,pair ,index 'metadata 1)))
-     (assert (= vorder (- (get-attribute graph (car pair) attribute)
-                          (get-attribute graph (cadr pair) attribute))))]))
+     (fassert (thunk (= vorder (- (get-attribute graph (car pair) attribute)
+                                  (get-attribute graph (cadr pair) attribute)))))]
+    [`(,index position ,axis ,attribute ,order) #:when (member axis axes)
+     (define vconstraint (register-variable state `(,pair ,index constraint)))
+     (fassert (thunk (= vconstraint (list-index 'positional constraints))))
+     (define vaxis (register-variable state `(,pair ,index 'metadata 0)))
+     (fassert (thunk (= vaxis (list-index axis axes))))
+     (define vorder (register-variable state `(,pair ,index 'metadata 1)))
+     (fassert (thunk (= vorder (compare (car pair) (cadr pair) order))))]))
 
-(define s (translate toy-graph program2))
+
+(define s (translate toy-graph program3))
 s
 (asserts)
 (define m (solve (asserts)))
 m
+(state-variables s)
 (printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s m '((3 2) 0 constraint)))
 
 ; Testing for the JSON
