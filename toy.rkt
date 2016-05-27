@@ -39,5 +39,6 @@ m
 (define test-state (translate test-graph program2))
 (asserts)
 (define test-model (solve (asserts)))
+(printf "State variables ~a\n" (state-variables test-state))
 (printf "~a\n" (get-assignments test-model))
 (graph->json test-graph test-state (get-assignments test-model))
