@@ -52,7 +52,23 @@
   (printf "Constraint: ~a, ~a\n" c val)
   (match val
     ['noop (void)]
-    ['positional (void)]
+    ; Transforming a positional constraint
+    ['positional
+     (define result (make-hasheq '((gap . "25"))))
+     (define node1 (make-hasheq '((offset . 0))))
+     (hash-set! node1 'node (list-index (car nodes) (graph-vertices graph)))
+     (hash-set! result 'left node1)
+     (define node2 (make-hasheq '((offset . 0))))
+     (hash-set! node2 'node (list-index (list-ref (cdr nodes) 0) (graph-vertices graph)))
+     (hash-set! result 'right node2)
+     (printf "VALUE: ~a -- ~a\n" (list-ref axes (get-value state model (list nodes constraint-index ''metadata 0))) (get-value state model (list nodes constraint-index ''metadata 0)))
+     (define axis-val (match (list-ref axes (get-value state model (list nodes constraint-index ''metadata 0)))
+                        ['x-axis "x"]
+                        ['y-axis "y"]))
+     (printf "Axis: ~a\n" axis-val)
+     (hash-set! result 'axis axis-val)
+     result]
+    ; Transforming an alignment constraint
     ['alignment
      (define node1 (make-hasheq '((offset . 0))))
      (hash-set! node1 'node (list-index (car nodes) (graph-vertices graph)))
@@ -60,7 +76,11 @@
      (hash-set! node2 'node (list-index (list-ref (cdr nodes) 0) (graph-vertices graph)))
      (define offsets  (list node1 node2)) 
      (define result (make-hasheq '((type . "alignment"))))
-     (hash-set! result 'axis "x")
+     (define axis-val (match (list-ref axes (get-value state model (list nodes constraint-index ''metadata 0)))
+                        ['x-axis "x"]
+                        ['y-axis "y"]))
+     (printf "Axis: ~a\n" axis-val)
+     (hash-set! result 'axis axis-val)
      (hash-set! result 'offsets offsets)
      result]
     ['grouping (void)]))
