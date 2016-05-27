@@ -35,7 +35,7 @@
   (define attr (graph-attributes g))
   (hash-set! result 'nodes (for/list ([index (graph-vertices g)])
                             (hash-ref attr index)))
-  (hash-set! result 'edges (for/list ([edge (graph-edges g)])
+  (hash-set! result 'links (for/list ([edge (graph-edges g)])
                             (hash-ref attr edge)))
   (define constraints '())
   (hash-set! result 'constraints (filter-not void? (for/list ([c (hash-keys (state-variables state))])

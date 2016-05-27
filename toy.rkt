@@ -33,4 +33,9 @@ m
 
 ; Testing for the JSON
 (define test-graph (json->graph example-graph))
-(graph->json toy-graph s m)
+(printf "Nodes: ~a\n" (graph-vertices test-graph))
+(printf "Edges: ~a\n" (graph-edges test-graph))
+(define test-state (translate test-graph program1))
+(asserts)
+(define test-model (solve (asserts)))
+(graph->json test-graph test-state test-model)
