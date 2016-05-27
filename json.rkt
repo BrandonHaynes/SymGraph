@@ -41,11 +41,11 @@
   (hash-set! result 'constraints (filter-not void? (for/list ([c (hash-keys (state-variables state))])
                                    ;(printf "State variables ~a\n" (state-variables state))
                                    (match c
-                                     [(list _ _ 'constraint) (constraint state model c)]
+                                     [(list _ _ 'constraint) (constraint g state model c)]
                                      [_ (void)]))))
   (write-json result))
 
-(define (constraint state model c)
+(define (constraint graph state model c)
   (define nodes (list-ref c 0))
   (define constraint-index (list-ref c 1))
   (define val (list-ref constraints (get-value state model c)))
@@ -54,10 +54,13 @@
     ['noop (void)]
     ['positional (void)]
     ['alignment
-     ;(make-hasheq '(('axis . "x")
-     ;(hash-set! result 'axis "x")
-     ;(hash-set! result 'type "alignment")
-     ;(printf "RESULT: ~a\n" result)
-     ;result]
-     (void)]
+     (define node1 (make-hasheq '((offset . 0))))
+     (hash-set! node1 'node (list-index (car nodes) (graph-vertices graph)))
+     (define node2 (make-hasheq '((offset . 0))))
+     (hash-set! node2 'node (list-index (list-ref (cdr nodes) 0) (graph-vertices graph)))
+     (define offsets  (list node1 node2)) 
+     (define result (make-hasheq '((type . "alignment"))))
+     (hash-set! result 'axis "x")
+     (hash-set! result 'offsets offsets)
+     result]
     ['grouping (void)]))
