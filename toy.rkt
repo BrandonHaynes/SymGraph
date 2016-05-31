@@ -6,8 +6,6 @@
 (define edges '((1 . 2)))
 (define toy-graph (make-graph vertices edges))
 
-(graph-attributes toy-graph)
-
 (define program1 '((def layer (= (prop v1 depth) (prop v2 depth))
                    (align x-axis))
                   (def graph (layer)
@@ -30,12 +28,12 @@ s
 (define m (solve (asserts)))
 m
 (state-variables s)
-(printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s (get-assignments m) '((3 2) 0 constraint)))
+(printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s (get-assignments m) '((3 2) 1 1 constraint)))
 
 ; Testing for the JSON
 (define test-graph (json->graph example-graph))
-(printf "Nodes: ~a\n" (graph-vertices test-graph))
-(printf "Edges: ~a\n" (graph-edges test-graph))
+;(printf "Nodes: ~a\n" (graph-vertices test-graph))
+;(printf "Edges: ~a\n" (graph-edges test-graph))
 (define test-state (translate test-graph program2))
 (asserts)
 (define test-model (solve (asserts)))

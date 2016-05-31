@@ -13,8 +13,8 @@
   (match set
     [`(def ,name (,reference-name _ ...) ,statements ...) #:when (symbol? reference-name) ;#:when (andmap symbol? reference-name)
      (map 
-        (lambda (vertices) (map (curry apply-statement state graph vertices) (enumerate statements)))
-        (equivalence-classes graph (get-predicate state reference-name)))] ; partition by sets
+        (lambda (vertices) (map (curry apply-statement state graph (cdr vertices)) (enumerate statements (* (car vertices) (length statements)))))
+        (enumerate (equivalence-classes graph (get-predicate state reference-name))))] ; partition by sets
     [`(def ,name ,predicate ,statements ...)
      (register-set state name predicate)
      (define relevant-vertices (filter (curry apply-expression graph predicate) (vertex-pairs graph)))

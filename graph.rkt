@@ -60,7 +60,6 @@
        (generate-depths graph 0 (graph-root graph))]
     [(< (get-attribute graph vertex 'depth) 0)
        (set-attribute graph vertex 'depth depth)
-       (printf "**** ~a: ~a" vertex (graph-children graph vertex))
        (for-each (curry generate-depths graph (+ depth 1)) (graph-children graph vertex))]
     [else null]))
 
