@@ -22,8 +22,8 @@
         (enumerate (equivalence-classes graph (get-predicate state reference-name))))] ; partition by sets
     [`(def ,name ,predicate ,statements ...)
      (register-set state name predicate)
-     (define relevant-vertices (filter (curry interpret-expression graph predicate) (vertex-pairs graph)))
-     (map (curry apply-statement state graph (graph-vertices graph))
+     (define relevant-vertices (filter (curry interpret-expression graph predicate) (vertex-pairs graph #:reflexive #f)))
+     (map (curry apply-statement state graph relevant-vertices)
           (enumerate statements))]))
 
 (define (equivalence-classes graph predicate)
