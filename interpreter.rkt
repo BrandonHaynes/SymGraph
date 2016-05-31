@@ -61,7 +61,6 @@
      (ordered-position-constraint state axis order index pair)]))
 
 (define (apply-operator op values)
-      (printf "~a ~a\n" op values)
   (if (not (member op operators))
       (error "Operator not supported:" op)
       (apply (eval op namespace) values)))
