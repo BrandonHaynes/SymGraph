@@ -31,11 +31,11 @@
 ;(printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s (get-assignments m) '((3 2) 1 1 constraint)))
 
 ; Testing for the JSON
-;(define test-graph (json->graph example-graph))
+(define test-graph (json->graph example-graph))
 ;(printf "Nodes: ~a\n" (graph-vertices test-graph))
 ;(printf "Edges: ~a\n" (graph-edges test-graph))
-;(define test-state (translate test-graph program2))
-;(asserts)
-;(define test-model (solve (asserts)))
+(define test-state (translate test-graph program2))
+(asserts)
+(define test-model (solve (asserts)))
 ;(printf "State variables ~a\n" (state-variables test-state))
-;(graph->json test-graph test-state (get-assignments test-model))
+(graph->json test-graph test-state (get-assignments test-model))
