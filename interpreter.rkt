@@ -1,8 +1,8 @@
 #lang rosette
 
-(require "state.rkt" "graph.rkt" "utilities.rkt" "variables.rkt" "constraints.rkt" "json.rkt")
+(require "state.rkt" "graph.rkt" "utilities.rkt" "constraints.rkt")
 
-(provide translate)
+(provide translate interpret-expression)
 
 (define-namespace-anchor anchor)
 (define namespace (namespace-anchor->namespace anchor))
@@ -22,7 +22,7 @@
         (enumerate (equivalence-classes graph (get-predicate state reference-name))))] ; partition by sets
     [`(def ,name ,predicate ,statements ...)
      (register-set state name predicate)
-     (define relevant-vertices (filter (curry apply-expression graph predicate) (vertex-pairs graph)))
+     (define relevant-vertices (filter (curry interpret-expression graph predicate) (vertex-pairs graph)))
      (map (curry apply-statement state graph (graph-vertices graph))
           (enumerate statements))]))
 
@@ -30,19 +30,19 @@
   (foldl (lambda (v l) (equivalence-class graph predicate v l)) '() (graph-vertices graph)))
 
 (define (equivalence-class graph predicate vertex classes)
-  (match (filter (lambda class (apply-expression graph predicate (cons vertex (car class)))) classes)
+  (match (filter (lambda class (interpret-expression graph predicate (cons vertex (car class)))) classes)
     [`() (append classes (list (list vertex)))]
     [`(,class _ ...) #:when (not (member vertex class))
         (replace class (cons vertex class) classes)]
     [_ classes]))
 
-(define (apply-expression graph expression pair)
+(define (interpret-expression graph expression pair)
   (match expression
     [`(,op ,values ...) #:when (member op operators)
-     (apply-operator op (map (lambda (v) (apply-expression graph v pair)) values))]
+     (apply-operator op (map (lambda (v) (interpret-expression graph v pair)) values))]
     [`(prop ,id ,attribute) #:when (and (member id '(v1 v2))
-                                        (member attribute (get-attribute-names graph (apply-expression graph id pair))))
-     (get-attribute graph (apply-expression graph id pair) attribute)]
+                                        (member attribute (get-attribute-names graph (interpret-expression graph id pair))))
+     (get-attribute graph (interpret-expression graph id pair) attribute)]
     ['v1 (car pair)]
     ['v2 (cadr pair)]))
 
@@ -61,6 +61,7 @@
      (ordered-position-constraint state axis order index pair)]))
 
 (define (apply-operator op values)
+      (printf "~a ~a\n" op values)
   (if (not (member op operators))
       (error "Operator not supported:" op)
       (apply (eval op namespace) values)))
@@ -69,9 +70,8 @@
   (member lvalue rvalue))
 (define (and lvalue rvalue)
   ((eval '(lambda (l r) (and l r)) (make-base-namespace)) lvalue rvalue))
-(define (min . values)
+(define (min values)
   ; Special form of min that returns NaN with no arguments
-  ((eval '(lambda (vs) (if (equal? vs '(()))
-                           +nan.0
-                           (apply min vs)))
-         (make-base-namespace)) values))
+  (if (equal? values '()) +nan.0
+      ((eval '(lambda (vs) (apply min vs))
+             (make-base-namespace)) values)))
