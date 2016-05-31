@@ -1,6 +1,6 @@
 #lang rosette/safe
 
-(require "core.rkt" "state.rkt" "graph.rkt" "json.rkt" "variables.rkt")
+(require "interpreter.rkt" "state.rkt" "graph.rkt" "json.rkt" "variables.rkt")
 
 (define vertices (list '1 '2 '3))
 (define edges '((1 . 2)))
@@ -22,21 +22,20 @@
                    (def graph (cluster)
                      (position y-axis depth (-1 (1 2) 3)))))
 
-(define s (translate toy-graph program3))
-s
-(asserts)
-(define m (solve (asserts)))
-m
-(state-variables s)
-(printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s (get-assignments m) '((3 2) 1 1 constraint)))
+;(define s (translate toy-graph program3))
+;s
+;(asserts)
+;(define m (solve (asserts)))
+;m
+;(state-variables s)
+;(printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s (get-assignments m) '((3 2) 1 1 constraint)))
 
 ; Testing for the JSON
-(define test-graph (json->graph example-graph))
+;(define test-graph (json->graph example-graph))
 ;(printf "Nodes: ~a\n" (graph-vertices test-graph))
 ;(printf "Edges: ~a\n" (graph-edges test-graph))
-(define test-state (translate test-graph program2))
-(asserts)
-(define test-model (solve (asserts)))
-(printf "State variables ~a\n" (state-variables test-state))
-(printf "~a\n" (get-assignments test-model))
-(graph->json test-graph test-state (get-assignments test-model))
+;(define test-state (translate test-graph program2))
+;(asserts)
+;(define test-model (solve (asserts)))
+;(printf "State variables ~a\n" (state-variables test-state))
+;(graph->json test-graph test-state (get-assignments test-model))

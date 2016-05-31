@@ -1,6 +1,7 @@
 #lang racket
 
-(provide make-graph graph-vertices graph-edges graph-attributes vertex-pairs vertex-degree get-attributes get-attribute get-attribute-names)
+(provide make-graph graph-vertices graph-edges graph-attributes vertex-pairs
+         get-attributes get-attribute get-attribute-names)
 
 (struct graph (vertices edges attributes))
 
@@ -11,9 +12,11 @@
   (generate-children g)
   g)
 
-(define (vertex-pairs graph)
-  (cartesian-product (graph-vertices graph)
-                     (graph-vertices graph)))
+(define (vertex-pairs graph #:reflexive [reflexive #t] #:symmetric [symmetric #t])
+  (filter (lambda (pair) (or symmetric (<= (car pair) (cadr pair))))
+          (filter (lambda (pair) (or reflexive (not (equal? (car pair) (cadr pair)))))
+                  (cartesian-product (graph-vertices graph)
+                                     (graph-vertices graph)))))
 
 (define (has-attribute? graph key attribute)
    (and
@@ -27,7 +30,6 @@
    (hash-ref (get-attributes graph key) attribute))
 
 (define (get-attribute-names graph key)
-   ;(hash-keys (hash-ref (graph-attributes graph) key)))
    (hash-keys (get-attributes graph key)))
 
 (define (set-attribute graph key attribute value)
@@ -38,7 +40,6 @@
    value)
 
 (define (vertex-degree graph vertex)
-  ;(define vertex (list-ref (graph-vertices graph) index))
   (foldl (lambda (edge sum) (+ sum (if (= vertex (car edge)) 1 0)))
          0
          (graph-edges graph)))
