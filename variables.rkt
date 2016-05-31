@@ -2,8 +2,8 @@
 
 (provide make-variable make-variables get-assignments)
 
-(define (make-variable)
-  (define-symbolic* v integer?)
+(define (make-variable [type integer?])
+  (define-symbolic* v type)
   v)
 
 (define (make-variables n)  

@@ -46,7 +46,6 @@
 
 (define (graph-root graph)
   ; TODO -- should be using a real root, not a random first vertex
-  (printf "Using ~a as root\n" (car (graph-vertices graph)))
   (car (graph-vertices graph)))
 
 (define (graph-children graph vertex)

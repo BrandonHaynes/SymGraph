@@ -1,6 +1,6 @@
 #lang rosette
 
-(provide list-index enumerate replace compare)
+(provide list-index enumerate replace compare bit-set?)
 
 (define (list-index element list [index 0])
   (cond
@@ -42,3 +42,6 @@
     ;[(string? value) string<?]
     ;[(symbol? value) symbol<?]
     ))
+
+(define (bit-set? b index size)
+  (bvuge (bvand b (bvshl (bv 1 size) (bv (- index 1) size))) (bv 1 size)))

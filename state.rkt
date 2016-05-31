@@ -1,4 +1,4 @@
-#lang racket
+#lang rosette
 
 (require "variables.rkt")
 
@@ -12,11 +12,11 @@
 (define (register-set state name predicate)
   (hash-set! (state-sets state) name (set-metadata predicate)))
 
-(define (register-variable state pair index suffix)
+(define (register-variable state pair index suffix [type integer?])
   (define name (make-name state pair index suffix))
   (when (hash-has-key? (state-variables state) name)
       (error "Duplicate key registered" name (state-variables state)))
-  (define variable (make-variable))
+  (define variable (make-variable type))
   (hash-set! (state-variables state) name variable)
   variable)
 
