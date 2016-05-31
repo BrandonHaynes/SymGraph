@@ -1,4 +1,4 @@
-#lang rosette/safe
+#lang rosette
 
 (require "interpreter.rkt" "state.rkt" "graph.rkt" "json.rkt" "variables.rkt")
 
@@ -37,5 +37,6 @@
 (define test-state (translate test-graph program1))
 ;(asserts)
 (define test-model (solve (asserts)))
-(printf "State variables ~a\n" (state-variables test-state))
-(graph->json test-graph test-state (get-assignments test-model))
+(printf "State variables\n")
+(for-each (lambda (v) (printf "~a = ~a\n" v (get-value test-state (get-assignments test-model) (car v)))) (hash->list (state-variables test-state)))
+;(graph->json test-graph test-state (get-assignments test-model))
