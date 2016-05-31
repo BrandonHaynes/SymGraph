@@ -33,11 +33,8 @@
 
 (define (apply-expression graph expression pair)
   (match expression
-    [`(,op ,lvalue ,rvalue) #:when (member op binary-operators)
-     (apply-binary-operator op (apply-expression graph lvalue pair)
-                               (apply-expression graph rvalue pair))]
-    [`(,op ,value)          #:when (member op unary-operators)
-     (apply-unary-operator op (apply-expression graph value pair))]
+    [`(,op ,values ...) #:when (member op operators)
+     (apply-operator op (map (lambda (v) (apply-expression graph v pair)) values))]
     [`(prop ,id ,attribute) #:when (and (member id '(v1 v2))
                                         (member attribute (get-attribute-names graph (apply-expression graph id pair))))
      (get-attribute graph (apply-expression graph id pair) attribute)]

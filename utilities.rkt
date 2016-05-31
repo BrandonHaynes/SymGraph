@@ -1,13 +1,13 @@
 #lang rosette
 
-(provide constraints unary-operators binary-operators axes
-         apply-binary-operator
-         apply-unary-operator
+(provide constraints operators axes
+         apply-operator
          list-index enumerate
          replace
          compare)
 
 (define constraints '(noop positional alignment grouping))
+(define operators '(= <= >= < > and or in not min))
 (define binary-operators '(= <= >= < > and or in))
 (define unary-operators '(not min))
 (define axes '(x-axis y-axis))
@@ -19,12 +19,17 @@
   (member lvalue rvalue))
 (define (and lvalue rvalue)
   ((eval '(lambda (l r) (and l r)) (make-base-namespace)) lvalue rvalue))
+(define (min . values)
+  ; Special form of min that returns NaN with no arguments
+  ((eval '(lambda (vs) (if (equal? vs '(()))
+                           +nan.0
+                           (apply min vs)))
+         (make-base-namespace)) values))
 
-(define (apply-binary-operator op lvalue rvalue)
-  ((eval op namespace) lvalue rvalue))
-
-(define (apply-unary-operator op value)
-  ((eval op namespace) (if (equal? value '()) +nan.0 (argmin identity value))))
+(define (apply-operator op values)
+  (if (not (member op operators))
+      (error "Operator not supported:" op)
+      (apply (eval op namespace) values)))
 
 (define (list-index element list [index 0])
   (cond
