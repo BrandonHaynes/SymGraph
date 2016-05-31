@@ -2,7 +2,7 @@
 
 (provide json->graph graph->json example-graph) ; TODO: example-graph is an example, remove.
 
-(require json "graph.rkt" "state.rkt" "utilities.rkt")
+(require json "graph.rkt" "state.rkt" "constraints.rkt" "utilities.rkt")
 
 ; A simple graph (tree) with 6 nodes and 5 edges
 (define example-graph

@@ -2,7 +2,10 @@
 
 (require "state.rkt" "utilities.rkt" "graph.rkt" "variables.rkt")
 
-(provide align-constraint position-constraint ordered-position-constraint)
+(provide constraints axes align-constraint position-constraint ordered-position-constraint)
+
+(define constraints '(noop positional alignment grouping))
+(define axes '(x-axis y-axis))
 
 (define (align-constraint state axis index pair)
   (define vconstraint (register-variable state pair index '(constraint)))
