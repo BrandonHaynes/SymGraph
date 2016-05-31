@@ -50,7 +50,7 @@
   (car (graph-vertices graph)))
 
 (define (graph-children graph vertex)
-  (filter (lambda pair (equal? (car pair) vertex)) (graph-edges graph)))
+  (map cdr (filter (lambda (pair) (equal? (car pair) vertex)) (graph-edges graph))))
 
 (define (graph-parents graph vertex)
   (filter (lambda pair (equal? (cdr pair) vertex)) (graph-edges graph)))
