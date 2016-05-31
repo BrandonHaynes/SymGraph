@@ -1,4 +1,4 @@
-#lang rosette/safe
+#lang rosette
 
 (provide constraints unary-operators binary-operators axes
          apply-binary-operator
@@ -12,22 +12,19 @@
 (define unary-operators '(not min))
 (define axes '(x-axis y-axis))
 
-; TODO change to eval
+(define-namespace-anchor anchor)
+(define namespace (namespace-anchor->namespace anchor))
+
+(define (in lvalue rvalue)
+  (member lvalue rvalue))
+(define (and lvalue rvalue)
+  ((eval '(lambda (l r) (and l r)) (make-base-namespace)) lvalue rvalue))
+
 (define (apply-binary-operator op lvalue rvalue)
-  (cond
-    [(equal? op '=) (= lvalue rvalue)]
-    [(equal? op '>=) (>= lvalue rvalue)]
-    [(equal? op '<=) (<= lvalue rvalue)]
-    [(equal? op '<) (< lvalue rvalue)]
-    [(equal? op '>) (> lvalue rvalue)]
-    [(equal? op 'and) (and lvalue rvalue)]
-    [(equal? op 'or) (or lvalue rvalue)]
-    [(equal? op 'in) (member lvalue rvalue)]))
+  ((eval op namespace) lvalue rvalue))
 
 (define (apply-unary-operator op value)
-  (cond
-    [(equal? op 'not) (not value)]
-    [(equal? op 'min) (if (equal? value '()) +nan.0 (argmin identity value))]))
+  ((eval op namespace) (if (equal? value '()) +nan.0 (argmin identity value))))
 
 (define (list-index element list [index 0])
   (cond
