@@ -41,15 +41,16 @@
   (hash-set! result 'constraints (filter-not void? (for/list ([c (hash-keys (state-variables state))])
                                    ;(printf "State variables ~a\n" (state-variables state))
                                    (match c
-                                     [(list _ _ 'constraint) (constraint g state model c)]
+                                     [(list _ _ _ 'constraint) (constraint g state model c)]
                                      [_ (void)]))))
   (write-json result))
 
 (define (constraint graph state model c)
   (define nodes (list-ref c 0))
-  (define constraint-index (list-ref c 1))
+  (define set-index (list-ref c 1))
+  (define constraint-index (list-ref c 2))
   (define val (list-ref constraints (get-value state model c)))
-  (printf "Constraint: ~a, ~a\n" c val)
+  ;(printf "Constraint: ~a, ~a\n" c val)
   (match val
     ['noop (void)]
     ; Transforming a positional constraint
@@ -57,10 +58,10 @@
      (define result (make-hasheq '((gap . "25"))))
      (hash-set! result 'left (list-index (car nodes) (graph-vertices graph)))
      (hash-set! result 'right (list-index (list-ref (cdr nodes) 0) (graph-vertices graph)))
-     (printf "VALUE: ~a -- ~a -- ~a\n" (list-ref axes (get-value state model (list nodes constraint-index ''metadata 0)))
-             (get-value state model (list nodes constraint-index ''metadata 0))
-             (list nodes constraint-index ''metadata 0))
-     (define axis-val (match (list-ref axes (get-value state model (list nodes constraint-index ''metadata 0)))
+     ;(printf "VALUE: ~a -- ~a -- ~a\n" (list-ref axes (get-value state model (list nodes set-index constraint-index 'metadata 0)))
+     ;        (get-value state model (list nodes set-index constraint-index 'metadata 0))
+     ;        (list nodes set-index constraint-index 'metadata 0))
+     (define axis-val (match (list-ref axes (get-value state model (list nodes set-index constraint-index 'metadata 0)))
                         ['x-axis "x"]
                         ['y-axis "y"]))
      ;(printf "Axis: ~a\n" axis-val)
@@ -74,7 +75,7 @@
      (hash-set! node2 'node (list-index (list-ref (cdr nodes) 0) (graph-vertices graph)))
      (define offsets  (list node1 node2)) 
      (define result (make-hasheq '((type . "alignment"))))
-     (define axis-val (match (list-ref axes (get-value state model (list nodes constraint-index ''metadata 0)))
+     (define axis-val (match (list-ref axes (get-value state model (list nodes set-index constraint-index 'metadata 0)))
                         ['x-axis "x"]
                         ['y-axis "y"]))
      ;(printf "Axis: ~a\n" axis-val)
