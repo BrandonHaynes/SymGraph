@@ -8,7 +8,6 @@
 (define axes '(x-axis y-axis))
 
 (define (align-constraint state axis index pair)
-  (printf "align: ~a\n" (list-index 'alignment constraints))
   (define vconstraint (register-variable state pair index '(constraint)))
   (assert (= vconstraint (list-index 'alignment constraints)))
   (define vaxis (register-variable state pair index '(metadata 0)))
@@ -20,12 +19,10 @@
   (define vaxis (register-variable state pair index '(metadata 0)))
   (assert (= vaxis (list-index axis axes)))
   (define vorder (register-variable state pair index '(metadata 1)))
-  (printf "positional: ~a\n" pair)
   (assert (= vorder (- (get-attribute graph (car pair) attribute)
                        (get-attribute graph (cadr pair) attribute)))))
 
 (define (ordered-position-constraint state axis order index pair)
-  (printf "opositional: ~a\n" (list-index 'positional constraints))
   (define vconstraint (register-variable state pair index '(constraint)))
   (assert (= vconstraint (list-index 'positional constraints)))
   (define vaxis (register-variable state pair index '(metadata 0)))

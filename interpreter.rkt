@@ -19,14 +19,11 @@
     [`(def ,name (partition ,expression) ,statements ...)
         (define classes (equivalence-classes graph expression))
         (define class-product (apply cartesian-product classes))
-            (printf "eq: ~a\n" classes)
-            (printf "cp: ~a\n" class-product)
         (for-each
           (lambda (vertices)
             (define relevant-vertices (filter (lambda (pair) (< (interpret-expression graph expression (cons (car pair) (car pair)))
                                                                 (interpret-expression graph expression (cons (cadr pair) (cadr pair)))))
                                               (cartesian-product vertices vertices)))
-            (printf "r: ~a\n" (car relevant-vertices))
             (for-each
              (lambda (s) (for-each (lambda (p) (apply-statement-pair state graph s p)) relevant-vertices))
              (enumerate statements (* (car vertices) (length statements))))
@@ -39,8 +36,12 @@
         (enumerate (equivalence-classes graph (get-predicate state reference-name))))] ; partition by sets
     [`(def ,name ,predicate ,statements ...)
      (register-set state name predicate)
-     (define relevant-vertices (filter (curry interpret-expression graph predicate) (vertex-pairs graph #:reflexive #f)))
-     (map (curry apply-statement state graph relevant-vertices)
+     (define relevant-pairs (filter (curry interpret-expression graph predicate) (vertex-pairs graph #:reflexive #f)))
+     (map
+          (lambda (statement)
+              (for-each
+                  (lambda (pair) (apply-statement-pair state graph statement pair))
+                  relevant-pairs))
           (enumerate statements))]))
 
 (define (equivalence-classes graph expression)
@@ -97,14 +98,3 @@
   (if (equal? values '()) +nan.0
       ((eval '(lambda (vs) (apply min vs))
              (make-base-namespace)) values)))
-
-
-(define vertices '(1 2 3 4))
-(define edges '((1 . 2)))
-(define toy-graph (make-graph vertices edges))
-
-(define program4 '((def graph (partition (prop v depth))
-                              (position y-axis depth))))
-
-(define test-state (translate toy-graph program4))
-
