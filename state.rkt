@@ -14,11 +14,14 @@
 
 (define (register-variable state pair index suffix [type integer?])
   (define name (make-name state pair index suffix))
-  (when (hash-has-key? (state-variables state) name)
-      (error "Duplicate key registered" name (state-variables state)))
-  (define variable (make-variable type))
-  (hash-set! (state-variables state) name variable)
-  variable)
+  ;(when (hash-has-key? (state-variables state) name)
+  ;    (error "Duplicate key registered" name (state-variables state)))
+  (if (not (hash-has-key? (state-variables state) name))
+    (begin
+    (define variable (make-variable type))
+    (hash-set! (state-variables state) name variable)
+    variable)
+    (hash-ref (state-variables state) name)))
 
 (define (set-count state)
   (hash-count (state-sets state)))

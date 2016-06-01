@@ -21,6 +21,8 @@
 (define program3 '((def cluster (= (prop v1 depth) (prop v2 depth)))
                    (def graph (cluster)
                      (position y-axis depth (-1 (1 2) 3)))))
+(define program4 '((def graph (partition (prop v depth)))
+                   (position y-axis depth)))
 
 ;(define s (translate toy-graph program3))
 ;s
@@ -34,7 +36,7 @@
 (define test-graph (json->graph example-graph))
 ;(printf "Nodes: ~a\n" (graph-vertices test-graph))
 ;(printf "Edges: ~a\n" (graph-edges test-graph))
-(define test-state (translate test-graph program1))
+(define test-state (translate test-graph program4))
 ;(asserts)
 (define test-model (solve (asserts)))
 (printf "State variables\n")
