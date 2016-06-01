@@ -29,7 +29,7 @@
             (printf "r: ~a\n" (car relevant-vertices))
             (for-each
              (lambda (s) (for-each (lambda (p) (apply-statement-pair state graph s p)) relevant-vertices))
-             (enumerate statements (* 1000 (length statements))))
+             (enumerate statements (* (car vertices) (length statements))))
             )
           class-product)
      ]
