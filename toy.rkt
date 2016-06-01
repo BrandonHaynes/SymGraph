@@ -21,8 +21,8 @@
 (define program3 '((def cluster (= (prop v1 depth) (prop v2 depth)))
                    (def graph (cluster)
                      (position y-axis depth (-1 (1 2) 3)))))
-(define program4 '((def graph (partition (prop v depth)))
-                   (position y-axis depth)))
+(define program4 '((def graph (partition (prop v depth))
+                              (position y-axis depth))))
 
 ;(define s (translate toy-graph program3))
 ;s
@@ -41,4 +41,4 @@
 (define test-model (solve (asserts)))
 (printf "State variables\n")
 (for-each (lambda (v) (printf "~a = ~a\n" v (get-value test-state (get-assignments test-model) (car v)))) (hash->list (state-variables test-state)))
-;(graph->json test-graph test-state (get-assignments test-model))
+(graph->json test-graph test-state (get-assignments test-model))
