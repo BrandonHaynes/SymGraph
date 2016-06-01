@@ -23,7 +23,7 @@
             (printf "cp: ~a\n" class-product)
         (for-each
           (lambda (vertices)
-            (define relevant-vertices (filter (lambda (pair) (> (interpret-expression graph expression (cons (car pair) (car pair)))
+            (define relevant-vertices (filter (lambda (pair) (< (interpret-expression graph expression (cons (car pair) (car pair)))
                                                                 (interpret-expression graph expression (cons (cadr pair) (cadr pair)))))
                                               (cartesian-product vertices vertices)))
             (printf "r: ~a\n" (car relevant-vertices))
