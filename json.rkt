@@ -5,7 +5,7 @@
 (require json "graph.rkt" "state.rkt" "constraints.rkt" "utilities.rkt")
 
 ; A simple graph (tree) with 6 nodes and 5 edges
-(define example-graph2
+(define example-graph
   "{\"nodes\": [{\"name\": \"a\", \"index\": 0}, {\"name\": \"b\", \"index\": 1}, {\"name\": \"c\", \"index\": 2}, 
                 {\"name\": \"d\", \"index\": 3}, {\"name\": \"e\", \"index\": 4}, {\"name\": \"f\", \"index\": 5}],
     \"links\": [
@@ -14,7 +14,7 @@
       {\"source\": 1, \"target\": 3},
       {\"source\": 2, \"target\": 4},
       {\"source\": 2, \"target\": 5}]}")
-(define example-graph
+(define example-graph2
   "{\"nodes\": [{\"name\": \"a\", \"index\": 0}, {\"name\": \"b\", \"index\": 1}, {\"name\": \"c\", \"index\": 2}],
     \"links\": [
       {\"source\": 0, \"target\": 1},
@@ -59,7 +59,7 @@
   (match val
     ['noop (void)]
     ; Transforming a positional constraint
-    ['alignment
+    ['positional
      (define result (make-hasheq '((gap . "25"))))
      (hash-set! result 'left (list-index (car nodes) (graph-vertices graph)))
      (hash-set! result 'right (list-index (list-ref (cdr nodes) 0) (graph-vertices graph)))
@@ -67,13 +67,13 @@
      ;        (get-value state model (list nodes set-index constraint-index 'metadata 0))
      ;        (list nodes set-index constraint-index 'metadata 0))
      (define axis-val (match (list-ref axes (get-value state model (list nodes set-index constraint-index 'metadata 0)))
-                        ['x-axis "y"]
-                        ['y-axis "x"]))
+                        ['x-axis "x"]
+                        ['y-axis "y"]))
      ;(printf "Axis: ~a\n" axis-val)
      (hash-set! result 'axis axis-val)
      result]
     ; Transforming an alignment constraint
-    ['positional
+    ['alignment
      (define node1 (make-hasheq '((offset . 0))))
      (hash-set! node1 'node (list-index (car nodes) (graph-vertices graph)))
      (define node2 (make-hasheq '((offset . 0))))
