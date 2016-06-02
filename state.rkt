@@ -12,10 +12,11 @@
 (define (register-set state name predicate)
   (hash-set! (state-sets state) name (set-metadata predicate)))
 
-(define (register-variable state pair index suffix [type integer?])
+(define (register-variable state pair index suffix [type integer?] [prevent-duplicates #f])
   (define name (make-name state pair index suffix))
-  ;(when (hash-has-key? (state-variables state) name)
-  ;    (error "Duplicate key registered" name (state-variables state)))
+  (printf "name: ~a\n" name)
+  (when (and prevent-duplicates (hash-has-key? (state-variables state) name))
+      (error "Duplicate key registered" name (state-variables state)))
   (if (not (hash-has-key? (state-variables state) name))
     (begin
     (define variable (make-variable type))

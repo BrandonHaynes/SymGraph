@@ -1,28 +1,48 @@
 #lang rosette/safe
 
-(require "graph.rkt" "state.rkt" "grammar.rkt" "interpreter.rkt" "utilities.rkt")
+(require "graph.rkt" "grammar.rkt" "interpreter.rkt" "variables.rkt" "utilities.rkt")
 
 (define (assign-vertices graph program)
-  (define state (empty-state))
   (define pairs (vertex-pairs graph #:reflexive #f #:symmetric #f))
-  (for-each (curry assign-pair state graph program) pairs)
-  state)
+  (define assignments (map (curry assign-pair graph program) pairs))
+  (foldl
+   (lambda (predicate aggregate)
+     (define relevant-assignments (map cadar (filter (lambda (a) (= (caar a) (car predicate))) assignments)))
+     (append (coalesce relevant-assignments (graph-vertices graph)) aggregate))
+   '()
+   (enumerate (get-predicates program))))
 
-(define (assign-pair state graph program pair)
-  (for-each (curry assign-pair-predicate state graph pair) (enumerate (get-predicates program))))
+(define (assign-pair graph program pair)
+  (map (curry assign-pair-predicate graph pair) (enumerate (get-predicates program))))
 
-(define (assign-pair-predicate state graph pair predicate)
-  (define v (register-variable state pair (car predicate) '(pair) boolean?))
-  (assert (equal? (interpret-expression graph (cdr predicate) pair) v)))
+(define (assign-pair-predicate graph pair predicate)
+  (define v (make-variable boolean?))
+  (assert (equal? (interpret-expression graph (cdr predicate) pair) v))
+  (list (car predicate) (cons pair v)))
 
-(define program1 '((def layer (= (prop v1 depth) (prop v2 depth))
-                   (align x-axis))
-                  ));(def graph (layer)
-                   ;(position y-axis depth))))
+(define (coalesce variables vertices)
+  (foldl
+    (lambda (v t) (if (contains v t) t (append t (list (list v)))))
+    (map remove-duplicates
+         (foldl
+          (lambda (variable sets)
+            (if (cdr variable)
+                (cond
+                  [(or (contains (caar variable) sets)
+                       (contains (cadar variable) sets))
+                   (foldl
+                    (lambda (s sets)
+                      (if (or (member (caar variable) s) (member (cadar variable) s))
+                          (append (list (append s (list (caar variable) (cadar variable)))) sets)
+                          (append s sets)))
+                    '()
+                    sets)]
+                  [else
+                   (append sets (list (car variable)))])
+                sets))
+          '()
+          variables))
+    vertices))
 
-(define vertices (list '1 '2 '3))
-(define edges '())
-(define toy-graph (make-graph vertices edges))
-
-(define state (assign-vertices toy-graph program1))
-(solve (asserts))
+(define (contains v lists)
+  (ormap (lambda (l) (member v l)) lists))

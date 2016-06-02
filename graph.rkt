@@ -1,4 +1,4 @@
-#lang racket
+#lang rosette
 
 (provide make-graph graph-vertices graph-edges graph-attributes vertex-pairs
          get-attributes get-attribute get-attribute-names)
