@@ -1,10 +1,6 @@
 #lang rosette
 
-(require "interpreter.rkt" "state.rkt" "graph.rkt" "json.rkt" "variables.rkt")
-
-(define vertices (list '1 '2 '3))
-(define edges '((1 . 2)))
-(define toy-graph (make-graph vertices edges))
+(require "interpreter.rkt" "state.rkt" "graph.rkt" "json.rkt" "variables.rkt" "examples.rkt")
 
 (define program1 '((def layer (= (prop v1 depth) (prop v2 depth))
                    (align x-axis))
@@ -12,7 +8,7 @@
                    (position y-axis depth))))
 (define program2 '((def layer (= (prop v1 depth) (prop v2 depth))
                      (align x-axis)
-                     (position y-axis depth))
+                     (position x-axis id))
                    (def child (and (in v1 (prop v2 children))
                                    (= v1 (min (prop v2 children))))
                      (align y-axis))
@@ -33,7 +29,7 @@
 ;(printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s (get-assignments m) '((3 2) 1 1 constraint)))
 
 ; Testing for the JSON
-(define test-graph (json->graph example-graph))
+(define test-graph (json->graph ten))
 ;(printf "Nodes: ~a\n" (graph-vertices test-graph))
 ;(printf "Edges: ~a\n" (graph-edges test-graph))
 (define test-state (translate test-graph program2))
