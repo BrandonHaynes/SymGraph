@@ -19,6 +19,8 @@
                      (position y-axis depth (-1 (1 2) 3)))))
 (define program4 '((def graph (partition (prop v depth))
                               (position y-axis depth))))
+(define programFoodWeb '((def graph (partition (prop v type))
+                           (position y-axis type (carnivore omnivore herbivore)))))
 
 ;(define s (translate toy-graph program3))
 ;s
@@ -29,12 +31,15 @@
 ;(printf "Value of '((3 2) 0 constraint) is ~a\n" (get-value s (get-assignments m) '((3 2) 1 1 constraint)))
 
 ; Testing for the JSON
-(define test-graph (json->graph ten))
+(define test-graph (json->graph food-web))
 ;(printf "Nodes: ~a\n" (graph-vertices test-graph))
 ;(printf "Edges: ~a\n" (graph-edges test-graph))
-(define test-state (translate test-graph program2))
+(printf "-----Translate-----\n")
+(define test-state (time (translate test-graph programFoodWeb)))
 ;(asserts)
-(define test-model (solve (asserts)))
-(printf "State variables\n")
-(for-each (lambda (v) (printf "~a = ~a\n" v (get-value test-state (get-assignments test-model) (car v)))) (hash->list (state-variables test-state)))
+(printf "\n-------Solve-------\n")
+(define test-model (time (solve (asserts))))
+;(printf "State variables\n")
+;(for-each (lambda (v) (printf "~a = ~a\n" v (get-value test-state (get-assignments test-model) (car v)))) (hash->list (state-variables test-state)))
+(printf "\n------to JSON------\n")
 (graph->json test-graph test-state (get-assignments test-model))

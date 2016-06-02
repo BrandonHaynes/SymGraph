@@ -47,9 +47,14 @@
     ['noop (void)]
     ; Transforming a positional constraint
     ['positional
-     (define result (make-hasheq '((gap . "25"))))
-     (hash-set! result 'left (list-index (car nodes) (graph-vertices graph)))
-     (hash-set! result 'right (list-index (list-ref (cdr nodes) 0) (graph-vertices graph)))
+     (define result (make-hasheq '((gap . 10))))
+     (let* ([direction (get-value state model (list nodes set-index constraint-index 'metadata 1))])
+       (printf "Metadata1: ~a \tNodes: ~a\n" direction nodes)
+       (if (< direction 0)
+           (begin (hash-set! result 'left (list-index (car nodes) (graph-vertices graph)))
+                  (hash-set! result 'right (list-index (list-ref (cdr nodes) 0) (graph-vertices graph))))
+           (begin (hash-set! result 'right (list-index (car nodes) (graph-vertices graph)))
+                  (hash-set! result 'left (list-index (list-ref (cdr nodes) 0) (graph-vertices graph))))))
      ;(printf "VALUE: ~a -- ~a -- ~a\n" (list-ref axes (get-value state model (list nodes set-index constraint-index 'metadata 0)))
      ;        (get-value state model (list nodes set-index constraint-index 'metadata 0))
      ;        (list nodes set-index constraint-index 'metadata 0))

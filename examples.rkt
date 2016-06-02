@@ -1,7 +1,7 @@
 #lang racket
 
 (require json "graph.rkt")
-(provide toy-graph example-graph ten twenty-tree forty-tree eighty-tree)
+(provide toy-graph example-graph ten ten-dag twenty-tree forty-tree eighty-tree food-web)
 
 (define vertices (list '1 '2 '3))
 (define edges '((1 . 2)))
@@ -25,6 +25,10 @@
       {\"source\": 1, \"target\": 2}]}")
 
 (define ten "{\"nodes\":[{\"id\":0},{\"id\":1},{\"id\":2},{\"id\":3},{\"id\":4},{\"id\":5},{\"id\":6},{\"id\":7},{\"id\":8},{\"id\":9}],\"links\":[{\"source\":0,\"target\":1},{\"source\":1,\"target\":2},{\"source\":0,\"target\":3},{\"source\":0,\"target\":4},{\"source\":2,\"target\":5},{\"source\":3,\"target\":6},{\"source\":5,\"target\":7},{\"source\":3,\"target\":8},{\"source\":2,\"target\":9}]}")
+
+(define ten-dag "{\"nodes\":[{\"id\":0},{\"id\":1},{\"id\":2},{\"id\":3},{\"id\":4},{\"id\":5},{\"id\":6},{\"id\":7},{\"id\":8},{\"id\":9}],\"links\":[{\"source\":0,\"target\":1},{\"source\":1,\"target\":2},{\"source\":0,\"target\":3},{\"source\":0,\"target\":4},{\"source\":2,\"target\":5},{\"source\":3,\"target\":6},{\"source\":5,\"target\":7},{\"source\":3,\"target\":8},{\"source\":2,\"target\":9},{\"source\":9, \"target\": 7}]}")
+
+(define food-web "{\"nodes\":[{\"id\":0,\"type\":\"carnivore\"},{\"id\":1,\"type\":\"herbivore\"},{\"id\":2,\"type\":\"carnivore\"},{\"id\":3,\"type\":\"herbivore\"},{\"id\":4,\"type\":\"omnivore\"},{\"id\":5,\"type\":\"omnivore\"},{\"id\":6,\"type\":\"omnivore\"},{\"id\":7,\"type\":\"carnivore\"},{\"id\":8,\"type\":\"omnivore\"},{\"id\":9,\"type\":\"herbivore\"},{\"id\":10,\"type\":\"carnivore\"},{\"id\":11,\"type\":\"herbivore\"},{\"id\":12,\"type\":\"omnivore\"},{\"id\":13,\"type\":\"herbivore\"},{\"id\":14,\"type\":\"carnivore\"}],\"links\":[{\"source\":0,\"target\":1},{\"source\":1,\"target\":2},{\"source\":1,\"target\":3},{\"source\":0,\"target\":4},{\"source\":3,\"target\":5},{\"source\":2,\"target\":6},{\"source\":0,\"target\":7},{\"source\":4,\"target\":8},{\"source\":3,\"target\":9},{\"source\":7,\"target\":10},{\"source\":1,\"target\":11},{\"source\":0,\"target\":12},{\"source\":0,\"target\":13},{\"source\":2,\"target\":14},{\"source\":6,\"target\":14},{\"source\":8,\"target\":4},{\"source\":1,\"target\":14},{\"source\":5,\"target\":13},{\"source\":9,\"target\":11},{\"source\":4,\"target\":10},{\"source\":12,\"target\":3},{\"source\":7,\"target\":14},{\"source\":6,\"target\":3},{\"source\":11,\"target\":3},{\"source\":0,\"target\":4},{\"source\":12,\"target\":13},{\"source\":3,\"target\":12},{\"source\":8,\"target\":5},{\"source\":14,\"target\":3},{\"source\":1,\"target\":4}]}")
 
 (define twenty-tree "{
   \"nodes\": [
