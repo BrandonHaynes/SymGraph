@@ -82,7 +82,7 @@
     [`(,index position ,axis ,attribute) #:when (member axis axes)
      (position-constraint state graph axis attribute index pair)]
     [`(,index position ,axis ,attribute ,order) #:when (member axis axes)
-     (ordered-position-constraint state axis order index pair)]))
+     (ordered-position-constraint state graph axis attribute order index pair)]))
 
 (define (apply-operator op values)
   (if (not (member op operators))
