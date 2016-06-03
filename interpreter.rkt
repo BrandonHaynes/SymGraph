@@ -107,3 +107,8 @@
   (if (equal? values '()) +nan.0
       ((eval '(lambda (vs) (apply min vs))
              (make-base-namespace)) values)))
+(define (max values)
+  ; Special form of max that returns NaN with no arguments
+  (if (equal? values '()) +nan.0
+      ((eval '(lambda (vs) (apply max vs))
+             (make-base-namespace)) values)))
