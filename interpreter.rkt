@@ -21,8 +21,9 @@
         (define class-product (apply cartesian-product classes))
         (for-each
           (lambda (vertices)
-            (define relevant-vertices (filter (lambda (pair) (< (interpret-expression graph expression (cons (car pair) (car pair)))
-                                                                (interpret-expression graph expression (cons (cadr pair) (cadr pair)))))
+            (define relevant-vertices (filter (lambda (pair) ((get-comparator (interpret-expression graph expression (cons (car pair) (car pair))))
+                                                              (interpret-expression graph expression (cons (car pair) (car pair)))
+                                                              (interpret-expression graph expression (cons (cadr pair) (cadr pair)))))
                                               (cartesian-product vertices vertices)))
             (for-each
              (lambda (s) (for-each (lambda (p) (apply-statement-pair state graph s p)) relevant-vertices))
@@ -45,9 +46,12 @@
           (enumerate statements))]))
 
 (define (equivalence-classes graph expression)
+  (define classes
+    (foldl (lambda (v l) (equivalence-class graph expression v l)) '() (graph-vertices graph)))
+  (define first (if (empty? classes) 0 (car classes)))
   (sort
     (foldl (lambda (v l) (equivalence-class graph expression v l)) '() (graph-vertices graph))
-    >
+    (lambda (l r) (not ((get-comparator (interpret-expression graph expression (cons (car first) (car first)))) l r)))
     #:key (lambda (c) (interpret-expression graph expression (cons (car c) (car c))))
     ))
 

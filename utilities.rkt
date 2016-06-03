@@ -1,6 +1,6 @@
 #lang rosette
 
-(provide list-index enumerate replace compare bit-set?)
+(provide list-index enumerate replace compare get-comparator bit-set?)
 
 (define (list-index element list [index 0])
   (cond
@@ -23,11 +23,6 @@
 (define (compare left right order)
   (define left-group (order-group left order))
   (define right-group (order-group right order))
-  (printf "~a is in group ~a, ~a is in group ~a -- result ~a\n" left left-group right right-group (cond
-    [(equal? left-group right-group) 0]
-    [null? left-group -1]
-    [((get-comparator left) left-group right-group) -1]
-    [else 1]))
   (cond
     [(equal? left-group right-group) 0]
     [null? left-group -1]
@@ -35,10 +30,11 @@
     [else 1]))
 
 (define (order-group value order)
-  ;(printf "~a ~a\n" value order)
   (cond
+    [(string? value) (order-group (string->symbol value) order)]
     [(empty? order) null]
-    [((get-comparator value) value (car (flatten order))) (car order)]
+    [(and (symbol? value) (equal? value (car order))) (car order)]
+    [(and (not (symbol? value)) ((get-comparator value) value (car (flatten order)))) (car order)]
     [else (order-group value (cdr order))]))
 
 (define (get-comparator value)
