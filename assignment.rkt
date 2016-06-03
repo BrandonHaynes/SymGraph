@@ -2,15 +2,21 @@
 
 (require "graph.rkt" "grammar.rkt" "interpreter.rkt" "variables.rkt" "utilities.rkt")
 
-(define (assign-vertices graph program)
+(provide assign-vertices)
+
+(define (assign-vertices graph program [evaluate-result #t])
   (define pairs (vertex-pairs graph #:reflexive #f #:symmetric #f))
   (define assignments (map (curry assign-pair graph program) pairs))
-  (foldl
+  (define symbolic (foldl
    (lambda (predicate aggregate)
      (define relevant-assignments (map cadar (filter (lambda (a) (= (caar a) (car predicate))) assignments)))
      (append (coalesce relevant-assignments (graph-vertices graph)) aggregate))
    '()
    (enumerate (get-predicates program))))
+  (if evaluate-result
+      (evaluate symbolic (solve symbolic))
+      symbolic))
+
 
 (define (assign-pair graph program pair)
   (map (curry assign-pair-predicate graph pair) (enumerate (get-predicates program))))
