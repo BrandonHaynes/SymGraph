@@ -7,7 +7,7 @@
 (define-namespace-anchor anchor)
 (define namespace (namespace-anchor->namespace anchor))
 
-(define operators '(= <= >= < > and or in not min))
+(define operators '(== = <= >= < > and or in not min))
 
 (define (translate graph program)
   (define state (empty-state))
@@ -93,6 +93,11 @@
       (error "Operator not supported:" op)
       (apply (eval op namespace) values)))
 
+(define (== lvalue rvalue)
+  (cond
+    [(number? lvalue) (= lvalue rvalue)]
+    [(symbol? lvalue) (symbol=? lvalue rvalue)]
+    [(string? lvalue) (string=? lvalue rvalue)]))
 (define (in lvalue rvalue)
   (member lvalue rvalue))
 (define (and lvalue rvalue)
