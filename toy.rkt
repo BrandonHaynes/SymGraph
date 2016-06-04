@@ -53,7 +53,7 @@
 
 (define test-graph (json->graph food-web))
 (printf "-----Translate-----\n")
-(define test-state (time (translate test-graph programFoodWeb)))
+(define test-state (time (translate test-graph programFoodWeb-hard)))
 (printf "\n-------Solve-------\n")
 (define test-model (time (solve (asserts))))
 (printf "\n------to JSON------\n")
