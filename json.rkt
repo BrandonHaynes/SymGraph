@@ -49,7 +49,7 @@
     ['positional
      (define result (make-hasheq '((gap . 10))))
      (let* ([direction (get-value state model (list nodes set-index constraint-index 'metadata 1))])
-       (printf "Metadata1: ~a \tNodes: ~a\n" direction nodes)
+       ;(printf "Metadata1: ~a \tNodes: ~a\n" direction nodes)
        (if (< direction 0)
            (begin (hash-set! result 'left (list-index (car nodes) (graph-vertices graph)))
                   (hash-set! result 'right (list-index (list-ref (cdr nodes) 0) (graph-vertices graph))))
