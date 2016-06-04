@@ -6,3 +6,5 @@ To run our examples, please see toy.rkt. This file (1) contains sample programs 
 - translate takes as input a graph and program and executes SymVis.
 - (solve (asserts)) runs the solver.
 - graph->json takes as input a graph, state, and assignments and produces the cola.js constraints in JSON format.
+
+This code requries Rosette to run, which can be found at https://emina.github.io/rosette/.
